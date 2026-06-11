@@ -1,0 +1,6 @@
+@LLMBenchmark.Api_HostAddress = http://localhost:5121
+
+GET {{LLMBenchmark.Api_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
