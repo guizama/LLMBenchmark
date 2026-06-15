@@ -61,8 +61,6 @@ builder.Services.AddScoped<ITokenEstimatorFactory, TokenEstimatorFactory>();
 
 builder.Services.AddScoped<IBenchmarkValidator, PlaceholderValidator>();
 builder.Services.AddScoped<IBenchmarkValidator, LinkValidator>();
-builder.Services.AddScoped<IBenchmarkValidator, CharacterLimitValidator>();
-builder.Services.AddScoped<IBenchmarkValidator, SmsSegmentValidator>();
 builder.Services.AddScoped<IBenchmarkValidator, CriticalInfoValidator>();
 
 builder.Services.AddScoped<JudgeDecisionService>();

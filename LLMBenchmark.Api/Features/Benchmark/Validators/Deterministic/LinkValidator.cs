@@ -22,16 +22,18 @@ public sealed partial class LinkValidator : IBenchmarkValidator
         var orderOk = inputLinks.SequenceEqual(outputLinks);
 
         var inputCounts = inputLinks.GroupBy(x => x).ToDictionary(x => x.Key, x => x.Count());
+
         var outputCounts = outputLinks.GroupBy(x => x).ToDictionary(x => x.Key, x => x.Count());
 
         var countOk =
             inputCounts.Count == outputCounts.Count &&
             inputCounts.All(x =>
-                outputCounts.TryGetValue(x.Key, out var count) &&
+                outputCounts.TryGetValue(
+                    x.Key,
+                    out var count) &&
                 count == x.Value);
 
-        var passed =
-            missing.Count == 0 && extra.Count == 0 && orderOk && countOk;
+        var passed = missing.Count == 0 && extra.Count == 0 && orderOk && countOk;
 
         var details = new List<string>();
 
@@ -42,13 +44,13 @@ public sealed partial class LinkValidator : IBenchmarkValidator
             details.Add($"Extra: [{string.Join(", ", extra)}]");
 
         if (!orderOk)
-            details.Add("Link order changed.");
+            details.Add("URL order changed.");
 
         if (!countOk)
-            details.Add("Link counts changed.");
+            details.Add("URL counts changed.");
 
         if (details.Count == 0)
-            details.Add("All links preserved exactly.");
+            details.Add("All URLs preserved exactly.");
 
         return Task.FromResult(
             new BenchmarkValidationResult
@@ -66,10 +68,12 @@ public sealed partial class LinkValidator : IBenchmarkValidator
     {
         return
         [
-            .. LinkRegex().Matches(text).Select(x => x.Value)
+            .. UrlRegex()
+                .Matches(text)
+                .Select(x => x.Value)
         ];
     }
 
-    [GeneratedRegex(@"\[\[.*?\]\]")]
-    private static partial Regex LinkRegex();
+    [GeneratedRegex(@"(https?:\/\/|www\.)[^\s]+")]
+    private static partial Regex UrlRegex();
 }

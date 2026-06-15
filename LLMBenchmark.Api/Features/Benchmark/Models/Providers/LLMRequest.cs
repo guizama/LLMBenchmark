@@ -17,10 +17,4 @@ public sealed class LLMRequest
     public SmsCreativity Creativity { get; set; }
 
     public int? MaxTokens { get; set; }
-
-    public string? Capability { get; set; }
-
-    public int? MaxCharacters { get; set; }
-    public int? ExpectedSmsSegments { get; set; }
-    public List<string>? UserRequirements { get; set; }
 }

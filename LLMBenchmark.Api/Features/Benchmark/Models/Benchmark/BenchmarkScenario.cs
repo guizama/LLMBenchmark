@@ -6,27 +6,30 @@ public sealed class BenchmarkScenario
 {
     public string? Id { get; set; }
 
-    public string? Category { get; set; }
+    public string? Action { get; set; }
+
+    public BenchmarkScenarioInput Input { get; set; } = new();
+
+    public BenchmarkScenarioSource? Source { get; set; }
+}
+
+public sealed class BenchmarkScenarioInput
+{
+    public string? Prompt { get; set; }
+
+    [JsonPropertyName("text")]
+    public string? InputText { get; set; }
 
     public string? Language { get; set; }
 
     public string? Tone { get; set; }
+}
 
-    public string? Objective { get; set; }
+public sealed class BenchmarkScenarioSource
+{
+    public string? Module { get; set; }
 
-    public string? Prompt { get; set; }
+    public Guid? CampaignId { get; set; }
 
-    [JsonPropertyName("input_text")]
-    public string? InputText { get; set; }
-
-    [JsonPropertyName("max_characters")]
-    public int? MaxCharacters { get; set; }
-
-    [JsonPropertyName("expected_sms_segments")]
-    public int? ExpectedSmsSegments { get; set; }
-
-    public List<string> Requirements { get; set; } = [];
-
-    [JsonPropertyName("expected_behavior")]
-    public List<string> ExpectedBehavior { get; set; } = [];
+    public Guid? SchedulingId { get; set; }
 }

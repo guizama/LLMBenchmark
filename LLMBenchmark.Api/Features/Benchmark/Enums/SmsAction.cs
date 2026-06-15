@@ -2,8 +2,11 @@
 
 public enum SmsAction
 {
+    Generate,
     Rewrite,
     Shorten,
     Expand,
+    Formalize,
+    Casualize,
     FixGrammar
 }

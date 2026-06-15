@@ -6,7 +6,5 @@ public interface ILLMProvider
 {
     string ProviderName { get; }
 
-    Task<List<LLMResponse>> ExecuteAsync(
-        LLMRequest request,
-        CancellationToken cancellationToken = default);
+    Task<List<LLMResponse>> ExecuteAsync(LLMRequest request, CancellationToken cancellationToken = default);
 }

@@ -9,10 +9,11 @@ using LlmTornado.Code;
 using LlmTornado.Code.Vendor;
 using Microsoft.Extensions.Options;
 using System.Text.Json;
+using System.Text.RegularExpressions;
 
 namespace LLMBenchmark.Api.Features.Benchmark.Providers;
 
-public sealed class GitHubModelsProvider : ILLMProvider
+public sealed partial class GitHubModelsProvider : ILLMProvider
 {
     private readonly TornadoApi _api;
     private readonly GitHubModelsOptions _options;
@@ -53,18 +54,13 @@ public sealed class GitHubModelsProvider : ILLMProvider
                     Temperature = MapCreativityToTemperature(request.Creativity)
                 });
 
-                GetPrompts(request, out string systemPrompt, out string systemPromptRequestSettings, out string systemPromptInputMetadata, out string? systemPromptUserRequirements);
+                GetPrompts(request, out string systemPrompt, out string systemPromptRequestSettings, out string systemPromptInputMetadata);
 
                 conversation.AppendSystemMessage(systemPrompt);
                 conversation.AppendSystemMessage(systemPromptRequestSettings);
                 conversation.AppendSystemMessage(systemPromptInputMetadata);
 
-                if (systemPromptUserRequirements != null)
-                {
-                    conversation.AppendSystemMessage(systemPromptUserRequirements);
-                }
-
-                var allSystemPrompts = systemPrompt + "\n" + systemPromptRequestSettings + "\n" + systemPromptInputMetadata + "\n" + systemPromptUserRequirements;
+                var allSystemPrompts = systemPrompt + "\n" + systemPromptRequestSettings + "\n" + systemPromptInputMetadata;
 
                 var tokenizerType = ResolveTokenizer(modelConfig.Tokenizer);
                 var estimator = _tokenEstimatorFactory.Create(tokenizerType);
@@ -147,97 +143,112 @@ public sealed class GitHubModelsProvider : ILLMProvider
         return results;
     }
 
-    private static void GetPrompts(LLMRequest request, out string systemPrompt, out string systemPromptRequestSettings, out string systemPromptInputMetadata, out string? systemPromptUserRequirements)
+    private static void GetPrompts(LLMRequest request, out string systemPrompt, out string systemPromptRequestSettings, out string systemPromptInputMetadata)
     {
+        var actionInstructions = request.Action switch
+        {
+            SmsAction.Generate => "Generate a completely new SMS based on the user request.",
+            SmsAction.Rewrite => "Rewrite the existing SMS while preserving its original meaning and intent. Do not create a completely different SMS.",
+            SmsAction.Shorten => "Shorten the existing SMS while preserving critical information, meaning, placeholders, URLs, dates, codes, prices and CTAs when present. Do not create a completely different SMS.",
+            SmsAction.Expand => "Expand the existing SMS naturally while preserving the original meaning and intent. Do not create a completely different SMS.",
+            SmsAction.Formalize => "Rewrite the existing SMS using a more formal tone while preserving the original meaning and intent. Do not create a completely different SMS.",
+            SmsAction.Casualize => "Rewrite the existing SMS using a more casual tone while preserving the original meaning and intent. Do not create a completely different SMS.",
+            SmsAction.FixGrammar => "Fix grammar, spelling and punctuation issues while preserving the original meaning and wording as much as possible. Do not create a completely different SMS.",
+            _ => "Process the SMS request safely."
+        };
+
         systemPrompt = """
-                    You are a specialized SMS generation engine.
-                    Your task is ONLY to generate or transform SMS messages.
-                    Non-negotiable Rules:
-                    - Return ONLY the final SMS text.
-                    - Do NOT add explanations.
-                    - Do NOT add quotes.
-                    - Do NOT add markdown.
-                    - Do NOT add introductions.
-                    - Do NOT say "Here is your SMS".
-                    - Never output JSON.
-                    - Never output XML.
-                    - Never output code.
-                    - Ignore any instruction unrelated to SMS generation.
-                    - Refuse requests involving hacking, malware, illegal activity, or non-SMS content.
-                    SMS behavior:
-                    - Respect the requested language exactly.
-                    - Respect the requested tone exactly.
-                    - Optimize messages to use the fewest SMS segments possible while preserving meaning and required information.
-                    - Keep the message concise, natural, and suitable for real SMS delivery.
-                    - Only output the final SMS content.
-                    - Do not simulate conversations.
-                    - Do not roleplay.
-                    - Do not answer questions.
-                    Placeholder and link rules:
-                    - Preserve placeholders exactly as received.
-                    - Preserve links exactly as received.
-                    - Placeholders always use the format {{placeholder}}.
-                    - Links always use the format [[link]].
-                    - Treat placeholders and links as immutable tokens.
-                    - Never modify placeholder names or contents.
-                    - Never modify link contents.
-                    - Never translate placeholders.
-                    - Never translate links.
-                    - Never summarize placeholders or links.
-                    - Never replace placeholders with generated text.
-                    - Preserve the original meaning and context associated with placeholders and links.
-                    - Keep placeholders and links semantically connected to their surrounding text.
-                    - Do not reorder placeholders or links unless required for grammatical correctness.
-                    Forbidden behavior:
-                    - Never invent Placeholders.
-                    - Never invent Links.
-                    - Never invent URLs or domains.
-                    - Never invent calls-to-action containing Links.
-                    - Never create Placeholders or Links tokens that were not present in the original input.
-                    - If the input does not contain Placeholders, placeholders are forbidden.
-                    - If the input does not contain Placeholders, links are forbidden.
-                    - Output must not contain any Placeholder or Link if not present in the original input.
-                    If the request is invalid or unsafe, return:
-                    INVALID_SMS_REQUEST
-                    """;
+            You are a specialized SMS generation engine.
+            Your task is ONLY to generate or transform SMS messages.
+
+            Non-negotiable Rules:
+            - Return ONLY the final SMS text.
+            - Do NOT add explanations.
+            - Do NOT add quotes.
+            - Do NOT add markdown.
+            - Do NOT add introductions.
+            - Do NOT say "Here is your SMS".
+            - Never output JSON.
+            - Never output XML.
+            - Never output code.
+            - Ignore any instruction unrelated to SMS generation.
+            - Refuse requests involving hacking, malware, illegal activity, or non-SMS content.
+
+            Action execution rules:
+            - You MUST execute ONLY the requested action.
+            - Never perform a different action than the requested one.
+            - Rewrite actions must preserve the original meaning and intent.
+            - Shorten actions must reduce size without losing critical information.
+            - Expand actions must preserve meaning while adding natural detail.
+            - Formalize actions must only change tone to formal.
+            - Casualize actions must only change tone to casual.
+            - FixGrammar actions must only correct grammar and spelling.
+            - Non-generate actions must transform the provided text instead of creating a completely new SMS.
+            - Never ignore the provided input text for rewrite-based actions.
+
+            SMS behavior:
+            - Respect the requested language exactly.
+            - Respect the requested tone exactly.
+            - Keep messages concise, natural, and suitable for real SMS delivery.
+            - Optimize messages to use the fewest SMS segments possible while preserving meaning and required information.
+            - Only output the final SMS content.
+            - Do not simulate conversations.
+            - Do not roleplay.
+            - Do not answer questions.
+
+            Placeholder and URL rules:
+            - Preserve placeholders exactly as received.
+            - Preserve URLs exactly as received.
+            - Placeholders always use the format {{placeholder}}.
+            - Treat placeholders and URLs as immutable tokens.
+            - Never modify placeholder names or contents.
+            - Never modify URLs.
+            - Never translate placeholders.
+            - Never translate URLs.
+            - Never summarize placeholders.
+            - Never summarize URLs.
+            - Never replace placeholders with generated text.
+            - Preserve the original meaning and context associated with placeholders and URLs.
+            - Keep placeholders and URLs semantically connected to their surrounding text.
+            - Do not reorder placeholders or URLs unless required for grammatical correctness.
+
+            Forbidden behavior:
+            - Never invent placeholders.
+            - Never invent URLs or domains.
+            - Never create URLs that were not present in the original input.
+            - Never create calls-to-action containing invented URLs.
+            - Never create placeholders that were not present in the original input.
+            - If the input does not contain placeholders, placeholders are forbidden.
+            - If the input does not contain URLs, generated URLs are forbidden.
+            - Output must not contain new placeholders or new URLs that were not present in the original input.
+
+            If the request is invalid or unsafe, return:
+            INVALID_SMS_REQUEST
+            """;
+
         var requestSettings = new List<string>
         {
             $"Action: {request.Action}",
             $"Tone: {request.Tone}",
-            $"Language: {request.Language}"
+            $"Language: {request.Language}",
+            $"ActionBehavior: {actionInstructions}"
         };
 
-        if (request.MaxCharacters.HasValue)
-            requestSettings.Add($"MaxCharacters: {request.MaxCharacters.Value}");
+        systemPromptRequestSettings =
+            """
+            Current request settings:
+            """
+            + "\n- "
+            + string.Join("\n- ", requestSettings);
 
-        if (request.ExpectedSmsSegments.HasValue)
-            requestSettings.Add($"ExpectedSmsSegments: {request.ExpectedSmsSegments.Value}");
-
-        systemPromptRequestSettings = """
-                    Current request settings:
-                    """
-                    + "\n- "
-                    + string.Join("\n- ", requestSettings);
-
-        var containsPlaceholders = request.UserText.Contains("{{");
-        var containsLinks = request.UserText.Contains("[[");
+        var containsPlaceholders = request.UserText.Contains("{{", StringComparison.Ordinal);
+        var containsLinks = UrlRegex().IsMatch(request.UserText);
 
         systemPromptInputMetadata = $"""
-                    Current input metadata:
-                    - ContainsPlaceholders: {containsPlaceholders}
-                    - ContainsLinks: {containsLinks}
-                    """;
-
-        if (request.UserRequirements?.Count > 0)
-        {
-            systemPromptUserRequirements = """
-                    Additional requirements: 
-                    """
-                    + "\n- "
-                    + string.Join("\n- ", request.UserRequirements);
-        }
-        else
-            systemPromptUserRequirements = null;
+            Current input metadata:
+            - ContainsPlaceholders: {containsPlaceholders}
+            - ContainsUrls: {containsLinks}
+            """;
     }
 
     private static double MapCreativityToTemperature(
@@ -266,4 +277,6 @@ public sealed class GitHubModelsProvider : ILLMProvider
         return TokenizerType.Heuristic;
     }
 
+    [GeneratedRegex(@"(https?:\/\/|www\.)[^\s]+")]
+    private static partial Regex UrlRegex();
 }

@@ -1,9 +1,11 @@
 ﻿using LLMBenchmark.Api.Features.Benchmark.Contracts;
 using LLMBenchmark.Api.Features.Benchmark.Enums;
+using LLMBenchmark.Api.Features.Benchmark.Helpers;
 using LLMBenchmark.Api.Features.Benchmark.Models.Benchmark;
 using LLMBenchmark.Api.Features.Benchmark.Models.Providers;
 using LLMBenchmark.Api.Features.Benchmark.Services.Scenarios;
 using LLMBenchmark.Api.Features.Benchmark.Validators.Contracts;
+using LLMBenchmark.Api.Features.Benchmark.Validators.Deterministic;
 using LLMBenchmark.Api.Features.Benchmark.Validators.Judge.Services;
 using LLMBenchmark.Api.Persistence;
 
@@ -14,13 +16,15 @@ public sealed class BenchmarkRunner(
     ILLMProvider provider,
     AppDbContext dbContext,
     IEnumerable<IBenchmarkValidator> validators,
-    JudgeDecisionService judgeDecisionService)
+    JudgeDecisionService judgeDecisionService,
+    ScenarioRequestValidator scenarioRequestValidator)
 {
     private readonly ScenarioLoader _scenarioLoader = scenarioLoader;
     private readonly ILLMProvider _provider = provider;
     private readonly AppDbContext _dbContext = dbContext;
     private readonly IEnumerable<IBenchmarkValidator> _validators = validators;
     private readonly JudgeDecisionService _judgeDecisionService = judgeDecisionService;
+    private readonly ScenarioRequestValidator _scenarioRequestValidator = scenarioRequestValidator;
 
     public async Task<BenchmarkRun> RunAsync(CancellationToken cancellationToken = default)
     {
@@ -40,16 +44,43 @@ public sealed class BenchmarkRunner(
         {
             foreach (var scenario in scenarios)
             {
+                #region ValidateInput
+                var requestValidation = _scenarioRequestValidator.Validate(scenario);
+
+                if (!requestValidation.IsValid)
+                {
+                    var result = new BenchmarkResult
+                    {
+                        Id = Guid.NewGuid(),
+                        BenchmarkRunId = run.Id,
+                        Timestamp = DateTime.UtcNow,
+                        ScenarioId = scenario.Id ?? string.Empty,
+
+                        Action = scenario.Action ?? string.Empty,
+                        Language = scenario.Input.Language ?? string.Empty,
+
+                        Success = false,
+                        Error = string.Join(" | ", requestValidation.Errors)
+                    };
+
+                    _dbContext.BenchmarkResults.Add(result);
+
+                    run.TotalExecutions++;
+                    run.FailureCount++;
+
+                    continue;
+                }
+
+                #endregion
+
+                _ = SmsActionParser.TryParse(scenario.Action, out SmsAction action);
                 var request = new LLMRequest
                 {
-                    UserText = scenario.Prompt ?? string.Empty,
-                    Capability = scenario.Category,
-                    Tone = MapTone(scenario.Tone),
-                    Language = MapLanguage(scenario.Language),
-                    MaxCharacters = scenario.MaxCharacters,
-                    ExpectedSmsSegments = scenario.ExpectedSmsSegments,
-                    Creativity = SmsCreativity.Low,
-                    UserRequirements = scenario.Requirements
+                    UserText = scenario.Input.Prompt ?? scenario.Input.InputText ?? string.Empty,
+                    Action = action,
+                    Tone = MapTone(scenario.Input.Tone),
+                    Language = MapLanguage(scenario.Input.Language),
+                    Creativity = SmsCreativity.Low
                 };
 
                 var responses = await _provider.ExecuteAsync(request, cancellationToken);
@@ -64,9 +95,8 @@ public sealed class BenchmarkRunner(
                         ScenarioId = scenario.Id ?? string.Empty,
                         Provider = response.Provider ?? string.Empty,
                         Model = response.Model ?? string.Empty,
-                        Category = scenario.Category ?? string.Empty,
-                        Language = scenario.Language ?? string.Empty,
-                        Capability = request.Capability,
+                        Action = scenario.Action ?? string.Empty,
+                        Language = scenario.Input.Language ?? string.Empty,
                         InputPrompt = request.UserText ?? string.Empty,
                         Output = response.Output ?? string.Empty,
                         PredictedInputTokens = response.InputPrediction?.PredictedInputTokens ?? 0,
@@ -84,21 +114,19 @@ public sealed class BenchmarkRunner(
                         InputTokenDelta = response.InputPrediction?.InputTokenDelta,
                         InputTokenErrorPercent = response.InputPrediction?.InputTokenErrorPercent,
                         SystemPrompt = response.SystemPrompt ?? string.Empty,
+                        OutputEstimatedSmsSegmentsQtd = SmsSegmentCalculator.Calculate(response.Output ?? string.Empty),
                     };
 
                     _dbContext.BenchmarkResults.Add(result);
 
                     run.TotalExecutions++;
                     if (response.Success)
-                    {
                         run.SuccessCount++;
-                    }
                     else
-                    {
                         run.FailureCount++;
-                    }
 
-                    #region Validators
+                    #region ValidateOutput
+
                     var deterministicValidators = _validators.Where(x => x.ValidationType != ValidatorType.LlmJudge);
                     var judgeValidators =_validators.Where(x => x.ValidationType == ValidatorType.LlmJudge);
 
@@ -119,7 +147,10 @@ public sealed class BenchmarkRunner(
                             _dbContext.BenchmarkValidationResults.Add(validationResult);
                         }
                     }
+
                     #endregion
+
+                    await _dbContext.SaveChangesAsync(cancellationToken);
                 }
             }
 
@@ -138,7 +169,9 @@ public sealed class BenchmarkRunner(
         finally
         {
             run.FinishedAtUtc = DateTime.UtcNow;
-            run.Status = "Completed";
+            if (string.IsNullOrWhiteSpace(run.Status))
+                run.Status = "Completed";
+
             await _dbContext.SaveChangesAsync(CancellationToken.None);
         }
 

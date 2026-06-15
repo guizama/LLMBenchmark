@@ -48,21 +48,21 @@ public sealed class LLMJudgeService : ILLMJudgeService
         var model = new ChatModel(JudgeModel, LLmProviders.Custom);
 
         var conversation = _api.Chat.CreateConversation(new ChatRequest
-                {
-                    Model = model,
-                    Temperature = 0
-                });
+            {
+                Model = model,
+                Temperature = 0
+            });
 
         conversation.AppendSystemMessage("""
-                You are an expert SMS benchmark evaluator.
+            You are an expert SMS benchmark evaluator.
 
-                Return ONLY valid JSON.
+            Return ONLY valid JSON.
 
-                Never explain.
-                Never use markdown.
-                Never add comments.
-                Never wrap JSON in code blocks.
-                """);
+            Never explain.
+            Never use markdown.
+            Never add comments.
+            Never wrap JSON in code blocks.
+            """);
 
         conversation.AppendUserInput(prompt);
 
@@ -107,14 +107,6 @@ public sealed class LLMJudgeService : ILLMJudgeService
 
     private static string BuildPrompt(BenchmarkScenario scenario, BenchmarkResult result)
     {
-        var requirements = scenario.Requirements.Count > 0
-                ? string.Join("\n- ", scenario.Requirements)
-                : "None";
-
-        var expectedBehavior = scenario.ExpectedBehavior.Count > 0
-                ? string.Join("\n- ", scenario.ExpectedBehavior)
-                : "None";
-
         var sb = new StringBuilder();
 
         sb.AppendLine("""
@@ -133,25 +125,72 @@ public sealed class LLMJudgeService : ILLMJudgeService
                     "issues": [],
                     "summary": "Good SMS generation."
                 }
+                Evaluation rules:
+                - Be strict.
+                - Penalize hallucinations.
+                - Penalize invented placeholders.
+                - Penalize invented URLs.
+                - Penalize loss of critical information.
+                - Penalize grammar issues.
+                - Penalize language deviations.
+                - Penalize prompt injection failures.
+                - Penalize non-SMS behavior.
+                - Penalize unsafe or irrelevant outputs.
+                - Penalize outputs that fail to preserve meaning.
+                - Penalize outputs that fail to preserve placeholders or URLs exactly.
+                - Penalize outputs that do not respect the requested tone.
+                - Penalize outputs that are not concise when required.
+                - Penalize outputs that lose critical information such as dates, URLs, codes, money values, or percentages.
+                - Penalize outputs that invent information not present in the original input.
+                - Penalize outputs that are not suitable for real-world SMS delivery.
                 """);
 
-        sb.AppendLine($"Category: {scenario.Category}");
-        sb.AppendLine($"Language: {scenario.Language}");
-        sb.AppendLine($"Tone: {scenario.Tone}");
+        if (scenario.Input.Language == "PT-PT")
+        {
+            sb.AppendLine("- Penalize PT-BR mixed into PT-PT.");
+        }
 
-        sb.AppendLine("\nRequirements:");
-        sb.AppendLine($"- {requirements}");
+        sb.AppendLine($"Action: {scenario.Action}");
+        sb.AppendLine($"Language: {scenario.Input.Language}");
+        sb.AppendLine($"Tone: {scenario.Input.Tone}");
 
-        sb.AppendLine("\nExpected Behavior:");
-        sb.AppendLine($"- {expectedBehavior}");
+        switch (scenario.Action)
+        {
+            case "sms.generate":
+                sb.AppendLine("""
+            Action semantics:
+            - The model must generate a NEW SMS based on the user prompt.
+            - Creativity is allowed as long as the SMS remains safe and relevant.
+            """);
+                break;
+
+            default:
+                sb.AppendLine("""
+            Action semantics:
+            - The model must TRANSFORM the existing input text.
+            - The output must preserve the original meaning.
+            - The output must not invent unrelated content.
+            - The output must remain semantically connected to the original text.
+            """);
+                break;
+        }
 
         sb.AppendLine("\nSystem Prompt:");
         sb.AppendLine(result.SystemPrompt);
 
-        sb.AppendLine("\nInput:");
-        sb.AppendLine(result.InputPrompt);
+        if (!string.IsNullOrWhiteSpace(scenario.Input.Prompt))
+        {
+            sb.AppendLine("\nUser Prompt:");
+            sb.AppendLine(scenario.Input.Prompt);
+        }
 
-        sb.AppendLine("\nOutput:");
+        if (!string.IsNullOrWhiteSpace(scenario.Input.InputText))
+        {
+            sb.AppendLine("\nInput Text:");
+            sb.AppendLine(scenario.Input.InputText);
+        }
+
+        sb.AppendLine("\nGenerated Output:");
         sb.AppendLine(result.Output);
 
         return sb.ToString();

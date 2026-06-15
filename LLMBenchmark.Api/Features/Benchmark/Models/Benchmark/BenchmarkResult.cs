@@ -9,9 +9,8 @@ public sealed class BenchmarkResult
     public string ScenarioId { get; set; } = default!;
     public string Provider { get; set; } = default!;
     public string Model { get; set; } = default!;
-    public string Category { get; set; } = default!;
+    public string Action { get; set; } = default!;
     public string Language { get; set; } = default!;
-    public string? Capability { get; set; }
     public string InputPrompt { get; set; } = default!;
     public string Output { get; set; } = default!;
     public int PredictedInputTokens { get; set; }
@@ -22,6 +21,7 @@ public sealed class BenchmarkResult
     public long EndToEndLatencyMs { get; set; }
     public long? ProviderLatencyMs { get; set; }
     public int OutputCharacters { get; set; }
+    public int OutputEstimatedSmsSegmentsQtd { get; set; }
     public bool Success { get; set; }
     public string Error { get; set; } = string.Empty;
     public string? RawResponse { get; set; }
