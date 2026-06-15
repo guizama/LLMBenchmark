@@ -1,6 +1,6 @@
 ﻿using LLMBenchmark.Api.Features.Benchmark.Enums;
 
-namespace LLMBenchmark.Api.Features.Benchmark.Contracts;
+namespace LLMBenchmark.Api.Features.Benchmark.Contracts.Estimator;
 
 public interface ITokenEstimatorFactory
 {

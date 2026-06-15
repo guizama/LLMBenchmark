@@ -1,6 +1,4 @@
-﻿using LLMBenchmark.Api.Features.Benchmark.Models.Benchmark;
-using LLMBenchmark.Api.Features.Benchmark.Validators.Models;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 
 namespace LLMBenchmark.Api.Persistence;
 

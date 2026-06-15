@@ -1,4 +1,4 @@
-﻿namespace LLMBenchmark.Api.Features.Benchmark.Validators.Judge.Models;
+﻿namespace LLMBenchmark.Api.Features.Benchmark.Models.Validation;
 
 public sealed class ScenarioJudgeResponse
 {

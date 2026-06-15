@@ -1,8 +1,8 @@
 ﻿using LLMBenchmark.Api.Features.Benchmark.Enums;
 using LLMBenchmark.Api.Features.Benchmark.Models.Benchmark;
-using LLMBenchmark.Api.Features.Benchmark.Validators.Models;
+using LLMBenchmark.Api.Persistence;
 
-namespace LLMBenchmark.Api.Features.Benchmark.Validators.Contracts;
+namespace LLMBenchmark.Api.Features.Benchmark.Contracts.Validator;
 
 public interface IBenchmarkValidator
 {

@@ -1,11 +1,11 @@
 ﻿using System.Text.Json;
+using LLMBenchmark.Api.Features.Benchmark.Contracts.Judge;
+using LLMBenchmark.Api.Features.Benchmark.Contracts.Validator;
 using LLMBenchmark.Api.Features.Benchmark.Enums;
 using LLMBenchmark.Api.Features.Benchmark.Models.Benchmark;
-using LLMBenchmark.Api.Features.Benchmark.Validators.Contracts;
-using LLMBenchmark.Api.Features.Benchmark.Validators.Judge.Contracts;
-using LLMBenchmark.Api.Features.Benchmark.Validators.Models;
+using LLMBenchmark.Api.Persistence;
 
-namespace LLMBenchmark.Api.Features.Benchmark.Validators.Judge;
+namespace LLMBenchmark.Api.Features.Benchmark.Validators.Output.Judge;
 
 public sealed class ScenarioJudgeValidator(ILLMJudgeService judgeService) : IBenchmarkValidator
 {

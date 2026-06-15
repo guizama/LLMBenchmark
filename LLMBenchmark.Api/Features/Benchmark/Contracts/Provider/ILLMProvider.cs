@@ -1,6 +1,6 @@
 ﻿using LLMBenchmark.Api.Features.Benchmark.Models.Providers;
 
-namespace LLMBenchmark.Api.Features.Benchmark.Contracts;
+namespace LLMBenchmark.Api.Features.Benchmark.Contracts.Provider;
 
 public interface ILLMProvider
 {

@@ -1,4 +1,4 @@
-﻿namespace LLMBenchmark.Api.Features.Benchmark.Models.Benchmark;
+﻿namespace LLMBenchmark.Api.Persistence;
 
 public sealed class BenchmarkRun
 {

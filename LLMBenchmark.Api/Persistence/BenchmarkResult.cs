@@ -1,6 +1,4 @@
-﻿using LLMBenchmark.Api.Features.Benchmark.Validators.Models;
-
-namespace LLMBenchmark.Api.Features.Benchmark.Models.Benchmark;
+﻿namespace LLMBenchmark.Api.Persistence;
 
 public sealed class BenchmarkResult
 {

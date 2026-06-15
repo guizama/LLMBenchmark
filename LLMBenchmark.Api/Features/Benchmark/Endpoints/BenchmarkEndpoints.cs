@@ -1,4 +1,4 @@
-﻿using LLMBenchmark.Api.Features.Benchmark.Contracts;
+﻿using LLMBenchmark.Api.Features.Benchmark.Contracts.Provider;
 using LLMBenchmark.Api.Features.Benchmark.Enums;
 using LLMBenchmark.Api.Features.Benchmark.Models.Providers;
 using LLMBenchmark.Api.Features.Benchmark.Services.Runner;

@@ -1,4 +1,4 @@
-﻿namespace LLMBenchmark.Api.Features.Benchmark.Services.Validation;
+﻿namespace LLMBenchmark.Api.Features.Benchmark.Models.Validation;
 
 public sealed class ScenarioRequestValidationResult
 {

@@ -1,6 +1,6 @@
 ﻿using LLMBenchmark.Api.Features.Benchmark.Enums;
 
-namespace LLMBenchmark.Api.Features.Benchmark.Validators.Models;
+namespace LLMBenchmark.Api.Persistence;
 
 public sealed class BenchmarkValidationResult
 {

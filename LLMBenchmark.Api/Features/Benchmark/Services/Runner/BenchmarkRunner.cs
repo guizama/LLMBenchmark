@@ -1,12 +1,12 @@
-﻿using LLMBenchmark.Api.Features.Benchmark.Contracts;
+﻿using LLMBenchmark.Api.Features.Benchmark.Contracts.Provider;
+using LLMBenchmark.Api.Features.Benchmark.Contracts.Validator;
 using LLMBenchmark.Api.Features.Benchmark.Enums;
 using LLMBenchmark.Api.Features.Benchmark.Helpers;
-using LLMBenchmark.Api.Features.Benchmark.Models.Benchmark;
 using LLMBenchmark.Api.Features.Benchmark.Models.Providers;
 using LLMBenchmark.Api.Features.Benchmark.Services.Scenarios;
-using LLMBenchmark.Api.Features.Benchmark.Validators.Contracts;
 using LLMBenchmark.Api.Features.Benchmark.Validators.Deterministic;
-using LLMBenchmark.Api.Features.Benchmark.Validators.Judge.Services;
+using LLMBenchmark.Api.Features.Benchmark.Validators.Input;
+using LLMBenchmark.Api.Features.Benchmark.Validators.Output.Judge.Services;
 using LLMBenchmark.Api.Persistence;
 
 namespace LLMBenchmark.Api.Features.Benchmark.Services.Runner;

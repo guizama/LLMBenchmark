@@ -1,5 +1,6 @@
 ﻿using LLMBenchmark.Api.Config;
-using LLMBenchmark.Api.Features.Benchmark.Contracts;
+using LLMBenchmark.Api.Features.Benchmark.Contracts.Estimator;
+using LLMBenchmark.Api.Features.Benchmark.Contracts.Provider;
 using LLMBenchmark.Api.Features.Benchmark.Enums;
 using LLMBenchmark.Api.Features.Benchmark.Models.Providers;
 using LlmTornado;

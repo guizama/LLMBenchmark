@@ -1,7 +1,8 @@
-﻿using LLMBenchmark.Api.Features.Benchmark.Enums;
-using LLMBenchmark.Api.Features.Benchmark.Services.Validation;
+﻿using LLMBenchmark.Api.Features.Benchmark.Helpers;
+using LLMBenchmark.Api.Features.Benchmark.Models.Benchmark;
+using LLMBenchmark.Api.Features.Benchmark.Models.Validation;
 
-namespace LLMBenchmark.Api.Features.Benchmark.Models.Benchmark;
+namespace LLMBenchmark.Api.Features.Benchmark.Validators.Input;
 
 public sealed class ScenarioRequestValidator
 {

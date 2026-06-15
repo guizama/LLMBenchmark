@@ -1,4 +1,4 @@
-﻿using LLMBenchmark.Api.Features.Benchmark.Contracts;
+﻿using LLMBenchmark.Api.Features.Benchmark.Contracts.Estimator;
 using LLMBenchmark.Api.Features.Benchmark.Enums;
 using LLMBenchmark.Api.Features.Benchmark.Models.Estimator;
 

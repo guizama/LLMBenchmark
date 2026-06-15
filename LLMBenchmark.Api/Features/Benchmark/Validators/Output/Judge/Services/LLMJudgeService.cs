@@ -2,11 +2,12 @@
 using System.Text;
 using System.Text.Json;
 using LLMBenchmark.Api.Config;
-using LLMBenchmark.Api.Features.Benchmark.Contracts;
+using LLMBenchmark.Api.Features.Benchmark.Contracts.Estimator;
+using LLMBenchmark.Api.Features.Benchmark.Contracts.Judge;
 using LLMBenchmark.Api.Features.Benchmark.Enums;
 using LLMBenchmark.Api.Features.Benchmark.Models.Benchmark;
-using LLMBenchmark.Api.Features.Benchmark.Validators.Judge.Contracts;
-using LLMBenchmark.Api.Features.Benchmark.Validators.Judge.Models;
+using LLMBenchmark.Api.Features.Benchmark.Models.Validation;
+using LLMBenchmark.Api.Persistence;
 using LlmTornado;
 using LlmTornado.Chat;
 using LlmTornado.Chat.Models;
@@ -14,7 +15,7 @@ using LlmTornado.Code;
 using LlmTornado.Code.Vendor;
 using Microsoft.Extensions.Options;
 
-namespace LLMBenchmark.Api.Features.Benchmark.Validators.Judge.Services;
+namespace LLMBenchmark.Api.Features.Benchmark.Validators.Output.Judge.Services;
 
 public sealed class LLMJudgeService : ILLMJudgeService
 {
@@ -65,7 +66,6 @@ public sealed class LLMJudgeService : ILLMJudgeService
             """);
 
         conversation.AppendUserInput(prompt);
-
         var response = await conversation.GetResponseRich(cts.Token);
 
         stopwatch.Stop();

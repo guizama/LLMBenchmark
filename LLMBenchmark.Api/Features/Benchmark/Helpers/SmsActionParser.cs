@@ -1,6 +1,6 @@
-﻿using System.Globalization;
+﻿using LLMBenchmark.Api.Features.Benchmark.Enums;
 
-namespace LLMBenchmark.Api.Features.Benchmark.Enums;
+namespace LLMBenchmark.Api.Features.Benchmark.Helpers;
 
 public static class SmsActionParser
 {

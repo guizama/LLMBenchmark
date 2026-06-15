@@ -1,8 +1,10 @@
 ﻿using LLMBenchmark.Api.Features.Benchmark.Enums;
+using LLMBenchmark.Api.Features.Benchmark.Helpers;
 using LLMBenchmark.Api.Features.Benchmark.Models.Benchmark;
-using LLMBenchmark.Api.Features.Benchmark.Validators.Judge.Models;
+using LLMBenchmark.Api.Features.Benchmark.Models.Validation;
+using LLMBenchmark.Api.Persistence;
 
-namespace LLMBenchmark.Api.Features.Benchmark.Validators.Judge.Services;
+namespace LLMBenchmark.Api.Features.Benchmark.Validators.Output.Judge.Services;
 
 public sealed class JudgeDecisionService
 {
