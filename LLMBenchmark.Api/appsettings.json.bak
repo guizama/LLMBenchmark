@@ -1,0 +1,40 @@
+{
+  "ConnectionStrings": {
+    "Postgres": "Host=localhost;Port=5432;Database=llmbenchmark;Username=postgres;Password=postgres"
+  },
+  "GitHubModels": {
+    "ApiKey": "",
+    "Models": [
+      {
+        "vendor": "OpenAI",
+        "model": "gpt-4.1-mini"
+      },
+      {
+        "vendor": "DeepSeek",
+        "model": "deepseek-v3-0324"
+      },
+      {
+        "vendor": "Mistral",
+        "model": "mistral-medium-2505"
+      },
+      {
+        "vendor": "Meta",
+        "model": "llama-3.3-70b-instruct"
+      },
+      {
+        "vendor": "Microsoft",
+        "model": "phi-4"
+      }
+    ]
+  }
+}
+
+
+//{
+//  "provider": "Google",
+//  "model": "gemini-2.0-flash"
+//},
+//{
+//  "provider": "Anthropic",
+//  "model": "claude-3.5-sonnet"
+//},
