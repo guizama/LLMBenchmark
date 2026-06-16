@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-PT">
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -16,38 +16,44 @@
     <header class="header">
         <div>
             <h1>LLM Benchmark Dashboard</h1>
-            <p>SMS Benchmark · Quality · Latency · Token Efficiency</p>
+            <p>Qualidade · Latência · Tokens · Validação</p>
         </div>
 
         <div class="run-info">
-            <span id="runStatus">Loading...</span>
+            <span id="runStatus">A carregar...</span>
         </div>
     </header>
 
     <section class="cards">
 
         <div class="card">
-            <h3>🏆 Best Model</h3>
+            <h3>🏆 Melhor Modelo</h3>
             <div class="value" id="bestModel">-</div>
             <div class="sub" id="bestModelScore">-</div>
         </div>
 
         <div class="card">
-            <h3>⚡ Lowest Latency</h3>
+            <h3>⚡ Menor Latência</h3>
             <div class="value" id="fastestModel">-</div>
             <div class="sub" id="fastestLatency">-</div>
         </div>
 
         <div class="card">
-            <h3>🧠 Best Score / Token</h3>
+            <h3>🧠 Melhor Score / Token</h3>
             <div class="value" id="efficientModel">-</div>
             <div class="sub" id="efficientScore">-</div>
         </div>
 
         <div class="card">
-            <h3>📦 Total Tokens</h3>
-            <div class="value" id="totalTokens">-</div>
-            <div class="sub">processed</div>
+            <h3>📦 Tokens Benchmark</h3>
+            <div class="value" id="benchmarkTokens">-</div>
+            <div class="sub">inferência</div>
+        </div>
+
+        <div class="card">
+            <h3>⚖️ Tokens Judge</h3>
+            <div class="value" id="judgeTokens">-</div>
+            <div class="sub">validação</div>
         </div>
 
     </section>
@@ -55,27 +61,57 @@
     <section class="charts-grid">
 
         <div class="chart-card">
-            <h2>Average Judge Score by Model</h2>
+            <h2>Score Médio do Judge por Modelo</h2>
+
+            <p class="chart-description">
+                Mostra a média de qualidade atribuída pelo LLM Judge a cada modelo.
+                Valores mais altos indicam melhor qualidade geral, aderência às instruções e segurança.
+            </p>
+
             <canvas id="scoreChart"></canvas>
         </div>
 
         <div class="chart-card">
-            <h2>Average Tokens by Model</h2>
+            <h2>Média de Tokens por Modelo</h2>
+
+            <p class="chart-description">
+                Mostra a quantidade média de tokens utilizados por execução.
+                Ajuda a comparar custo, verbosidade e eficiência dos modelos.
+            </p>
+
             <canvas id="tokensChart"></canvas>
         </div>
 
         <div class="chart-card">
-            <h2>Average Latency by Model</h2>
+            <h2>Latência Média por Modelo</h2>
+
+            <p class="chart-description">
+                Mede o tempo médio de resposta de cada modelo em milissegundos.
+                Valores mais baixos representam respostas mais rápidas.
+            </p>
+
             <canvas id="latencyChart"></canvas>
         </div>
 
         <div class="chart-card">
-            <h2>Score Per Token</h2>
+            <h2>Score por Token</h2>
+
+            <p class="chart-description">
+                Compara qualidade versus consumo de tokens.
+                Ajuda a identificar modelos que entregam melhores resultados com menor custo.
+            </p>
+
             <canvas id="efficiencyChart"></canvas>
         </div>
 
         <div class="chart-card full">
-            <h2>Validator Pass Rate</h2>
+            <h2>Taxa de Sucesso dos Validadores</h2>
+
+            <p class="chart-description">
+                Mostra a percentagem de execuções aprovadas pelos validadores determinísticos e regras do benchmark.
+                Valores mais altos indicam maior confiabilidade.
+            </p>
+
             <canvas id="validatorChart"></canvas>
         </div>
 
@@ -89,18 +125,18 @@
 
     <section class="table-section">
 
-        <h2>Execution Results</h2>
+        <h2>Resultados das Execuções</h2>
 
         <table id="resultsTable">
             <thead>
             <tr>
-                <th>Model</th>
-                <th>Action</th>
+                <th>Modelo</th>
+                <th>Ação</th>
                 <th>Score</th>
                 <th>Tokens</th>
-                <th>Latency</th>
-                <th>Segments</th>
-                <th>Success</th>
+                <th>Latência</th>
+                <th>Segmentos</th>
+                <th>Sucesso</th>
             </tr>
             </thead>
 

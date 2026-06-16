@@ -8,6 +8,7 @@ body {
     background: #0f1117;
     color: #e5e7eb;
     font-family: Inter, Arial, sans-serif;
+    line-height: 1.5;
 }
 
 .container {
@@ -20,7 +21,9 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    gap: 20px;
     margin-bottom: 40px;
+    flex-wrap: wrap;
 }
 
 .header h1 {
@@ -30,19 +33,20 @@ body {
 
 .header p {
     color: #9ca3af;
+    font-size: 15px;
 }
 
 .run-info {
     background: #1a1d29;
     padding: 14px 20px;
     border-radius: 12px;
+    border: 1px solid #2a2f3f;
 }
 
 .cards {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
     gap: 20px;
-
     margin-bottom: 40px;
 }
 
@@ -50,6 +54,13 @@ body {
     background: #1a1d29;
     border-radius: 16px;
     padding: 24px;
+    border: 1px solid #262b3a;
+    transition: 0.2s ease;
+}
+
+.card:hover {
+    transform: translateY(-2px);
+    border-color: #3b4257;
 }
 
 .card h3 {
@@ -59,20 +70,22 @@ body {
 }
 
 .card .value {
-    font-size: 28px;
+    font-size: 30px;
     font-weight: bold;
+    color: #ffffff;
+    word-break: break-word;
 }
 
 .card .sub {
     margin-top: 8px;
     color: #9ca3af;
+    font-size: 14px;
 }
 
 .charts-grid {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(auto-fit, minmax(420px, 1fr));
     gap: 24px;
-
     margin-bottom: 40px;
 }
 
@@ -80,6 +93,11 @@ body {
     background: #1a1d29;
     padding: 24px;
     border-radius: 16px;
+    border: 1px solid #262b3a;
+    min-height: 420px;
+
+    display: flex;
+    flex-direction: column;
 }
 
 .chart-card.full {
@@ -87,15 +105,29 @@ body {
 }
 
 .chart-card h2 {
-    margin-bottom: 20px;
+    margin-bottom: 12px;
     font-size: 20px;
+    color: #ffffff;
+}
+
+.chart-description {
+    color: #9ca3af;
+    font-size: 14px;
+    margin-bottom: 18px;
+    line-height: 1.6;
+}
+
+.chart-card canvas {
+    max-height: 300px !important;
+    width: 100% !important;
+    margin-top: auto;
 }
 
 .insights {
     background: #1a1d29;
     border-radius: 16px;
     padding: 24px;
-
+    border: 1px solid #262b3a;
     margin-bottom: 40px;
 }
 
@@ -105,15 +137,22 @@ body {
 
 .insight-item {
     margin-bottom: 14px;
-    padding: 14px;
+    padding: 16px;
     background: #11131b;
     border-radius: 12px;
+    border: 1px solid #202535;
+}
+
+.insight-item strong {
+    color: #ffffff;
 }
 
 .table-section {
     background: #1a1d29;
     border-radius: 16px;
     padding: 24px;
+    border: 1px solid #262b3a;
+    overflow-x: auto;
 }
 
 .table-section h2 {
@@ -123,10 +162,17 @@ body {
 table {
     width: 100%;
     border-collapse: collapse;
+    min-width: 900px;
 }
 
 thead {
     background: #11131b;
+}
+
+th {
+    color: #9ca3af;
+    font-size: 14px;
+    font-weight: 600;
 }
 
 th,
@@ -134,6 +180,10 @@ td {
     padding: 14px;
     text-align: left;
     border-bottom: 1px solid #2a2f3f;
+}
+
+tbody tr {
+    transition: background 0.15s ease;
 }
 
 tr:hover {
@@ -150,17 +200,57 @@ tr:hover {
     font-weight: bold;
 }
 
-@media (max-width: 1100px) {
+@media (max-width: 1200px) {
 
-    .cards {
-        grid-template-columns: repeat(2, 1fr);
+    .chart-card.full {
+        grid-column: span 1;
+    }
+}
+
+@media (max-width: 900px) {
+
+    .container {
+        width: 94%;
+        margin: 24px auto;
+    }
+
+    .header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .header h1 {
+        font-size: 30px;
     }
 
     .charts-grid {
         grid-template-columns: 1fr;
     }
 
-    .chart-card.full {
-        grid-column: span 1;
+    .chart-card {
+        min-height: auto;
+    }
+
+    .chart-card canvas {
+        max-height: 260px !important;
+    }
+}
+
+@media (max-width: 600px) {
+
+    .cards {
+        grid-template-columns: 1fr;
+    }
+
+    .card .value {
+        font-size: 24px;
+    }
+
+    .chart-card {
+        padding: 18px;
+    }
+
+    .table-section {
+        padding: 18px;
     }
 }

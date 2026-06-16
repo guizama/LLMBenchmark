@@ -1,0 +1,33 @@
+{
+"SELECT\r\n    br.\"Model\",\r\n    COUNT(*) AS execution_count,\r\n    AVG(\r\n        COALESCE(br.\"InputTokens\", 0)\r\n        +\r\n        COALESCE(br.\"OutputTokens\", 0)\r\n    ) AS benchmark_avg_tokens,\r\n    AVG(\r\n        COALESCE(bvr.\"JudgeInputTokens\", 0)\r\n        +\r\n        COALESCE(bvr.\"JudgeOutputTokens\", 0)\r\n    ) AS judge_avg_tokens,\r\n    SUM(\r\n        COALESCE(br.\"InputTokens\", 0)\r\n        +\r\n        COALESCE(br.\"OutputTokens\", 0)\r\n    ) AS benchmark_total_tokens,\r\n    SUM(\r\n        COALESCE(bvr.\"JudgeInputTokens\", 0)\r\n        +\r\n        COALESCE(bvr.\"JudgeOutputTokens\", 0)\r\n    ) AS judge_total_tokens,\r\n    AVG(bvr.\"Score\") AS avg_score,\r\n    AVG(br.\"EndToEndLatencyMs\") AS avg_latency_ms\r\nFROM \"BenchmarkResults\" br\r\nLEFT JOIN \"BenchmarkValidationResults\" bvr ON bvr.\"BenchmarkResultId\" = br.\"Id\"\r\nGROUP BY br.\"Model\"\r\nORDER BY avg_score DESC": [
+	{
+		"Model" : "gpt-5.4-mini",
+		"execution_count" : 156,
+		"benchmark_avg_tokens" : 648.5897435897435897,
+		"judge_avg_tokens" : 309.4935897435897436,
+		"benchmark_total_tokens" : 101180,
+		"judge_total_tokens" : 48281,
+		"avg_score" : 9.076923076923077,
+		"avg_latency_ms" : 1085.5897435897435897
+	},
+	{
+		"Model" : "gpt-4.1-mini",
+		"execution_count" : 381,
+		"benchmark_avg_tokens" : 632.2519685039370079,
+		"judge_avg_tokens" : 291.1653543307086614,
+		"benchmark_total_tokens" : 240888,
+		"judge_total_tokens" : 110934,
+		"avg_score" : 8.428571428571429,
+		"avg_latency_ms" : 2254.7769028871391076
+	},
+	{
+		"Model" : "llama-3.3-70b-instruct",
+		"execution_count" : 225,
+		"benchmark_avg_tokens" : 675.1155555555555556,
+		"judge_avg_tokens" : 289.6400000000000000,
+		"benchmark_total_tokens" : 151901,
+		"judge_total_tokens" : 65169,
+		"avg_score" : 8.346153846153847,
+		"avg_latency_ms" : 1386.2977777777777778
+	}
+]}

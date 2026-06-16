@@ -12,10 +12,9 @@ async function loadData() {
         await fetch('benchmark-runs.json')
             .then(r => r.json());
 
-    // Suporta formato:
-    // {
-    //   "SELECT ...": [ ... ]
-    // }
+    const metricsRaw =
+        await fetch('model_metrics.json')
+            .then(r => r.json());
 
     const benchmarkResults =
         extractArray(benchmarkResultsRaw);
@@ -26,10 +25,14 @@ async function loadData() {
     const runs =
         extractArray(runsRaw);
 
+    const metrics =
+        extractArray(metricsRaw);
+
     initializeDashboard(
         benchmarkResults,
         validators,
-        runs
+        runs,
+        metrics
     );
 }
 
@@ -44,26 +47,26 @@ function extractArray(obj) {
     return obj[firstKey] || [];
 }
 
-function initializeDashboard(results, validators, runs) {
+function initializeDashboard(results, validators, runs, metrics) {
 
     const latestRun = runs[0];
 
     if (latestRun) {
 
         document.getElementById('runStatus').innerText =
-            `${latestRun.Status} · ${latestRun.TotalExecutions} executions`;
+            `${latestRun.Status} · ${latestRun.TotalExecutions} execuções`;
     }
 
-    renderCards(results);
+    renderCards(results, metrics);
 
-    renderCharts(results, validators);
+    renderCharts(results, validators, metrics);
 
-    renderInsights(results);
+    renderInsights(results, metrics);
 
     renderTable(results);
 }
 
-function renderCards(results) {
+function renderCards(results, metrics) {
 
     const grouped = groupByModel(results);
 
@@ -75,8 +78,6 @@ function renderCards(results) {
 
     let efficientModel = null;
     let bestEfficiency = -1;
-
-    let totalTokens = 0;
 
     for (const model in grouped) {
 
@@ -90,11 +91,6 @@ function renderCards(results) {
 
         const avgEfficiency =
             average(items.map(x => Number(x.ScorePerToken) || 0));
-
-        const tokens =
-            sum(items.map(x => Number(x.TotalTokens) || 0));
-
-        totalTokens += tokens;
 
         if (avgScore > bestScore) {
             bestScore = avgScore;
@@ -116,25 +112,34 @@ function renderCards(results) {
         bestModel || '-';
 
     document.getElementById('bestModelScore').innerText =
-        `Score ${bestScore.toFixed(2)}`;
+        `Score ${safeToFixed(bestScore, 2)}`;
 
     document.getElementById('fastestModel').innerText =
         fastestModel || '-';
 
     document.getElementById('fastestLatency').innerText =
-        `${fastestLatency.toFixed(0)} ms`;
+        `${safeToFixed(fastestLatency, 0)} ms`;
 
     document.getElementById('efficientModel').innerText =
         efficientModel || '-';
 
     document.getElementById('efficientScore').innerText =
-        bestEfficiency.toFixed(4);
+        safeToFixed(bestEfficiency, 4);
 
-    document.getElementById('totalTokens').innerText =
-        totalTokens.toLocaleString();
+    const benchmarkTokens =
+        sum(metrics.map(x => Number(x.benchmark_total_tokens) || 0));
+
+    const judgeTokens =
+        sum(metrics.map(x => Number(x.judge_total_tokens) || 0));
+
+    document.getElementById('benchmarkTokens').innerText =
+        benchmarkTokens.toLocaleString();
+
+    document.getElementById('judgeTokens').innerText =
+        judgeTokens.toLocaleString();
 }
 
-function renderCharts(results, validators) {
+function renderCharts(results, validators, metrics) {
 
     const grouped = groupByModel(results);
 
@@ -146,13 +151,21 @@ function renderCharts(results, validators) {
                 .map(x => Number(x.JudgeScore) || 0)
         )
     );
+	
+	const avgBenchmarkTokens = models.map(m => {
+		const metric =
+			metrics.find(x => x.Model === m);
 
-    const avgTokens = models.map(m =>
-        average(
-            grouped[m]
-                .map(x => Number(x.TotalTokens) || 0)
-        )
-    );
+		return Number(metric?.benchmark_avg_tokens) || 0;
+	});
+
+	const avgJudgeTokens = models.map(m => {
+
+		const metric =
+			metrics.find(x => x.Model === m);
+
+		return Number(metric?.judge_avg_tokens) || 0;
+	});
 
     const avgLatency = models.map(m =>
         average(
@@ -172,28 +185,30 @@ function renderCharts(results, validators) {
         'scoreChart',
         models,
         avgScores,
-        'Judge Score'
+        'Score Médio'
     );
 
-    createBarChart(
-        'tokensChart',
-        models,
-        avgTokens,
-        'Tokens'
-    );
+    createDualBarChart( 
+		'tokensChart', 
+		models, 
+		avgBenchmarkTokens, 
+		avgJudgeTokens, 
+		'Benchmark Tokens', 
+		'Judge Tokens' 
+	);
 
     createBarChart(
         'latencyChart',
         models,
         avgLatency,
-        'Latency (ms)'
+        'Latência'
     );
 
     createBarChart(
         'efficiencyChart',
         models,
         avgEfficiency,
-        'Score / Token'
+        'Score por Token'
     );
 
     renderValidatorChart(validators);
@@ -226,11 +241,19 @@ function renderValidatorChart(validators) {
     const labels =
         Object.keys(grouped);
 
-    const passed =
-        labels.map(x => grouped[x].passed);
+    const passRates =
+        labels.map(x => {
 
-    const failed =
-        labels.map(x => grouped[x].failed);
+            const total =
+                grouped[x].passed + grouped[x].failed;
+
+            if (!total)
+                return 0;
+
+            return (
+                grouped[x].passed / total
+            ) * 100;
+        });
 
     new Chart(
         document.getElementById('validatorChart'),
@@ -241,18 +264,15 @@ function renderValidatorChart(validators) {
                 labels,
                 datasets: [
                     {
-                        label: 'Passed',
-                        data: passed
-                    },
-                    {
-                        label: 'Failed',
-                        data: failed
+                        label: 'Taxa de Aprovação (%)',
+                        data: passRates
                     }
                 ]
             },
 
             options: {
                 responsive: true,
+
                 plugins: {
                     legend: {
                         labels: {
@@ -260,16 +280,19 @@ function renderValidatorChart(validators) {
                         }
                     }
                 },
+
                 scales: {
                     x: {
                         ticks: {
                             color: '#fff'
                         }
                     },
+
                     y: {
                         ticks: {
                             color: '#fff'
-                        }
+                        },
+                        max: 100
                     }
                 }
             }
@@ -277,7 +300,7 @@ function renderValidatorChart(validators) {
     );
 }
 
-function renderInsights(results) {
+function renderInsights(results, metrics) {
 
     const insights = [];
 
@@ -304,7 +327,7 @@ function renderInsights(results) {
     if (bestEfficiencyModel) {
 
         insights.push(
-            `${bestEfficiencyModel} achieved the best score-per-token efficiency.`
+            `${bestEfficiencyModel} apresentou a melhor eficiência score/token.`
         );
     }
 
@@ -327,7 +350,22 @@ function renderInsights(results) {
             )[0];
 
         insights.push(
-            `${highestLatencyModel} presented the highest average latency.`
+            `${highestLatencyModel} apresentou a maior latência média.`
+        );
+    }
+
+    if (metrics.length > 0) {
+
+        const highestJudgeTokens =
+            metrics.sort(
+                (a, b) =>
+                    Number(b.judge_total_tokens || 0)
+                    -
+                    Number(a.judge_total_tokens || 0)
+            )[0];
+
+        insights.push(
+            `${highestJudgeTokens.Model} consumiu mais tokens no processo de validação Judge.`
         );
     }
 
@@ -369,7 +407,7 @@ function renderTable(results) {
             <td>${format(r.EndToEndLatencyMs)} ms</td>
             <td>${format(r.OutputEstimatedSmsSegmentsQtd)}</td>
             <td class="${r.Success ? 'success' : 'failure'}">
-                ${r.Success ? 'PASS' : 'FAIL'}
+                ${r.Success ? 'PASSOU' : 'FALHOU'}
             </td>
         `;
 
@@ -471,5 +509,77 @@ function format(v) {
 
     return Number(v).toFixed(2);
 }
+
+function safeToFixed(value, decimals = 2) {
+
+    if (
+        value === null ||
+        value === undefined ||
+        isNaN(value)
+    ) {
+        return '0';
+    }
+
+    return Number(value).toFixed(decimals);
+}
+
+function createDualBarChart(
+    id,
+    labels,
+    data1,
+    data2,
+    label1,
+    label2
+) {
+
+    new Chart(
+        document.getElementById(id),
+        {
+            type: 'bar',
+
+            data: {
+                labels,
+                datasets: [
+                    {
+                        label: label1,
+                        data: data1
+                    },
+                    {
+                        label: label2,
+                        data: data2
+                    }
+                ]
+            },
+
+            options: {
+                responsive: true,
+
+                plugins: {
+                    legend: {
+                        labels: {
+                            color: '#fff'
+                        }
+                    }
+                },
+
+                scales: {
+                    x: {
+                        ticks: {
+                            color: '#fff'
+                        }
+                    },
+
+                    y: {
+                        ticks: {
+                            color: '#fff'
+                        }
+                    }
+                }
+            }
+        }
+    );
+}
+
+
 
 loadData();
