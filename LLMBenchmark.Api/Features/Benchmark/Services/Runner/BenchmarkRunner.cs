@@ -149,9 +149,28 @@ public sealed class BenchmarkRunner(
                         {
                             foreach (var validator in judgeValidators)
                             {
-                                var validationResult = await validator.ValidateAsync(scenario, result, cancellationToken);
-                                result.Validations.Add(validationResult);
-                                _dbContext.BenchmarkValidationResults.Add(validationResult);
+                                try
+                                {
+                                    var validationResult = await validator.ValidateAsync(scenario, result, cancellationToken);
+                                    result.Validations.Add(validationResult);
+                                    _dbContext.BenchmarkValidationResults.Add(validationResult);
+                                }
+                                catch (Exception ex)
+                                {
+                                    result.Validations.Add(new BenchmarkValidationResult
+                                    {
+                                        Id = Guid.NewGuid(),
+                                        BenchmarkResultId = result.Id,
+
+                                        Validator = validator.Name,
+                                        ValidationType = validator.ValidationType,
+
+                                        Passed = false,
+                                        Score = 0,
+
+                                        Details = $"Validator failed: {ex.Message}"
+                                    });
+                                }
                             }
                         }
 
