@@ -4,8 +4,6 @@ namespace LLMBenchmark.Api.Features.Benchmark.Models.Providers;
 
 public sealed class LLMRequest
 {
-    public List<string> Models { get; set; } = [];
-
     public string UserText { get; set; } = default!;
 
     public SmsAction Action { get; set; }

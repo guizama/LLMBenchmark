@@ -5,8 +5,8 @@ using LLMBenchmark.Api.Features.Benchmark.Contracts.Judge;
 using LLMBenchmark.Api.Features.Benchmark.Contracts.Provider;
 using LLMBenchmark.Api.Features.Benchmark.Contracts.Validator;
 using LLMBenchmark.Api.Features.Benchmark.Endpoints;
-using LLMBenchmark.Api.Features.Benchmark.Providers;
 using LLMBenchmark.Api.Features.Benchmark.Services.Estimators;
+using LLMBenchmark.Api.Features.Benchmark.Services.Providers;
 using LLMBenchmark.Api.Features.Benchmark.Services.Runner;
 using LLMBenchmark.Api.Features.Benchmark.Services.Scenarios;
 using LLMBenchmark.Api.Features.Benchmark.Validators.Deterministic;
@@ -39,14 +39,17 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 });
 
 builder.Services.AddScoped<ScenarioLoader>();
-builder.Services.Configure<GitHubModelsOptions>(builder.Configuration.GetSection("GitHubModels"));
 
-builder.Services.AddSingleton(new TornadoApi([
-    new ProviderAuthentication(
-        LLmProviders.OpenAi,
-        builder.Configuration["GitHubModels:Token"]!
-    )
+builder.Services.Configure<LLMProviderOptions>("GitHubModels", builder.Configuration.GetSection("Providers:GitHubModels"));
+builder.Services.Configure<LLMProviderOptions>("OpenAI", builder.Configuration.GetSection("Providers:OpenAI"));
+
+
+builder.Services.AddSingleton(new TornadoApi(
+[
+    new ProviderAuthentication(LLmProviders.OpenAi, builder.Configuration["Providers:OpenAI:ApiKey"]!),
+    new ProviderAuthentication(LLmProviders.Custom, builder.Configuration["Providers:GitHubModels:ApiKey"]!)
 ]));
+
 
 builder.Services.ConfigureHttpJsonOptions(options =>
 {
@@ -54,7 +57,14 @@ builder.Services.ConfigureHttpJsonOptions(options =>
         new JsonStringEnumConverter());
 });
 
+builder.Services.AddSwaggerGen(options =>
+{
+    options.UseInlineDefinitionsForEnums();
+});
+
 builder.Services.AddScoped<ILLMProvider, GitHubModelsProvider>();
+builder.Services.AddScoped<ILLMProvider, OpenAIProvider>();
+
 builder.Services.AddScoped<HeuristicTokenEstimator>();
 builder.Services.AddScoped<SharpTokenEstimator>();
 

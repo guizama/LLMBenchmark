@@ -18,4 +18,12 @@ public sealed class ScenarioLoader
 
         return JsonSerializer.Deserialize<List<BenchmarkScenario>>(json, JsonOptions) ?? [];
     }
+
+    public async Task<List<BenchmarkScenario>> FullLoadAsync()
+    {
+        var path = Path.Combine(AppContext.BaseDirectory, "Scenarios", "scenarios-full.json");
+        var json = await File.ReadAllTextAsync(path);
+
+        return JsonSerializer.Deserialize<List<BenchmarkScenario>>(json, JsonOptions) ?? [];
+    }
 }

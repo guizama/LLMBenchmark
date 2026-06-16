@@ -29,7 +29,7 @@ public sealed class ScenarioJudgeValidator(ILLMJudgeService judgeService) : IBen
             Score = judge.Result.OverallScore,
             Details = judge.Result.Summary,
 
-            JudgeProvider = "GitHubModels",
+            JudgeProvider = "OpenAI",
             JudgeModel = "gpt-4.1-mini",
             JudgePrompt = judge.Result.JudgePrompt,
 

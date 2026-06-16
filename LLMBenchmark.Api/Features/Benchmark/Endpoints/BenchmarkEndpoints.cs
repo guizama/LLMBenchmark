@@ -19,26 +19,39 @@ public static class BenchmarkEndpoints
                 return Results.Ok(scenarios);
             });
 
-        app.MapGet("/test-llm", async (ILLMProvider provider) =>
+        app.MapGet("/test-openai", async (IEnumerable<ILLMProvider> providers) =>
+        {
+            var provider = providers.First(x => x.ProviderName == "openai");
+
+            return await provider.ExecuteAsync(new LLMRequest
             {
-                var response = await provider.ExecuteAsync(
-                    new LLMRequest
-                    {
-                        UserText = "Cria um SMS curto de promoção.",
-                        Action = SmsAction.Rewrite,
-                        Tone = SmsTone.Neutral,
-                        Language = SmsLanguage.PtPT,
-                        Creativity = SmsCreativity.Low
-                    });
-
-                return response;
+                UserText = "Cria um SMS curto de promoção.",
+                Action = SmsAction.Generate,
+                Tone = SmsTone.Neutral,
+                Language = SmsLanguage.PtPT,
+                Creativity = SmsCreativity.Low
             });
+        });
 
-        app.MapPost("/benchmark/run", async (BenchmarkRunner runner, CancellationToken cancellationToken) =>
+        app.MapGet("/test-github", async (IEnumerable<ILLMProvider> providers) =>
+        {
+            var provider = providers.First(x => x.ProviderName == "github-models");
+
+            return await provider.ExecuteAsync(new LLMRequest
             {
-                var result = await runner.RunAsync(cancellationToken);
-
-                return Results.Ok(result);
+                UserText = "Cria um SMS curto de promoção.",
+                Action = SmsAction.Generate,
+                Tone = SmsTone.Neutral,
+                Language = SmsLanguage.PtPT,
+                Creativity = SmsCreativity.Low
             });
+        });
+
+        app.MapPost("/benchmark/run", async (BenchmarkProvider? provider, ScenariosLoad scenariosLoad, BenchmarkRunner runner, CancellationToken cancellationToken) =>
+        {
+            var result = await runner.RunAsync(provider, scenariosLoad, cancellationToken);
+
+            return Results.Ok(result);
+        });
     }
 }

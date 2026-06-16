@@ -2,14 +2,14 @@
 
 namespace LLMBenchmark.Api.Config;
 
-public sealed class GitHubModelsOptions
+public sealed class LLMProviderOptions
 {
     public string ApiKey { get; set; } = default!;
 
-    public List<GitHubModelConfig> Models { get; set; } = [];
+    public List<LLMModelConfig> Models { get; set; } = [];
 }
 
-public sealed class GitHubModelConfig
+public sealed class LLMModelConfig
 {
     public string Vendor { get; set; } = default!;
 

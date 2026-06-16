@@ -4,7 +4,6 @@ using LLMBenchmark.Api.Features.Benchmark.Enums;
 using LLMBenchmark.Api.Features.Benchmark.Helpers;
 using LLMBenchmark.Api.Features.Benchmark.Models.Providers;
 using LLMBenchmark.Api.Features.Benchmark.Services.Scenarios;
-using LLMBenchmark.Api.Features.Benchmark.Validators.Deterministic;
 using LLMBenchmark.Api.Features.Benchmark.Validators.Input;
 using LLMBenchmark.Api.Features.Benchmark.Validators.Output.Judge.Services;
 using LLMBenchmark.Api.Persistence;
@@ -13,22 +12,28 @@ namespace LLMBenchmark.Api.Features.Benchmark.Services.Runner;
 
 public sealed class BenchmarkRunner(
     ScenarioLoader scenarioLoader,
-    ILLMProvider provider,
+    IEnumerable<ILLMProvider> providers,
     AppDbContext dbContext,
     IEnumerable<IBenchmarkValidator> validators,
     JudgeDecisionService judgeDecisionService,
     ScenarioRequestValidator scenarioRequestValidator)
 {
     private readonly ScenarioLoader _scenarioLoader = scenarioLoader;
-    private readonly ILLMProvider _provider = provider;
+    private readonly IEnumerable<ILLMProvider> _providers = providers;
     private readonly AppDbContext _dbContext = dbContext;
     private readonly IEnumerable<IBenchmarkValidator> _validators = validators;
     private readonly JudgeDecisionService _judgeDecisionService = judgeDecisionService;
     private readonly ScenarioRequestValidator _scenarioRequestValidator = scenarioRequestValidator;
 
-    public async Task<BenchmarkRun> RunAsync(CancellationToken cancellationToken = default)
+    public async Task<BenchmarkRun> RunAsync(BenchmarkProvider? benchmarkProvider = null, ScenariosLoad scenariosLoad = ScenariosLoad.Simple, CancellationToken cancellationToken = default)
     {
-        var scenarios = await _scenarioLoader.LoadAsync();
+        var selectedProviders = benchmarkProvider is null
+                                ? _providers
+                                : _providers.Where(x => x.BenchmarkProviderType == benchmarkProvider);
+
+        var scenarios = scenariosLoad == ScenariosLoad.Full
+                        ? await _scenarioLoader.FullLoadAsync()
+                        : await _scenarioLoader.LoadAsync();
 
         var run = new BenchmarkRun
         {
@@ -42,115 +47,118 @@ public sealed class BenchmarkRunner(
         await _dbContext.SaveChangesAsync(cancellationToken);
         try
         {
-            foreach (var scenario in scenarios)
+            foreach (var providerInstance in selectedProviders)
             {
-                #region ValidateInput
-                var requestValidation = _scenarioRequestValidator.Validate(scenario);
-
-                if (!requestValidation.IsValid)
+                foreach (var scenario in scenarios)
                 {
-                    var result = new BenchmarkResult
+                    #region ValidateInput
+                    var requestValidation = _scenarioRequestValidator.Validate(scenario);
+
+                    if (!requestValidation.IsValid)
                     {
-                        Id = Guid.NewGuid(),
-                        BenchmarkRunId = run.Id,
-                        Timestamp = DateTime.UtcNow,
-                        ScenarioId = scenario.Id ?? string.Empty,
+                        var result = new BenchmarkResult
+                        {
+                            Id = Guid.NewGuid(),
+                            BenchmarkRunId = run.Id,
+                            Timestamp = DateTime.UtcNow,
+                            ScenarioId = scenario.Id ?? string.Empty,
 
-                        Action = scenario.Action ?? string.Empty,
-                        Language = scenario.Input.Language ?? string.Empty,
+                            Action = scenario.Action ?? string.Empty,
+                            Language = scenario.Input.Language ?? string.Empty,
 
-                        Success = false,
-                        Error = string.Join(" | ", requestValidation.Errors)
-                    };
+                            Success = false,
+                            Error = string.Join(" | ", requestValidation.Errors)
+                        };
 
-                    _dbContext.BenchmarkResults.Add(result);
+                        _dbContext.BenchmarkResults.Add(result);
 
-                    run.TotalExecutions++;
-                    run.FailureCount++;
-
-                    continue;
-                }
-
-                #endregion
-
-                _ = SmsActionParser.TryParse(scenario.Action, out SmsAction action);
-                var request = new LLMRequest
-                {
-                    UserText = scenario.Input.Prompt ?? scenario.Input.InputText ?? string.Empty,
-                    Action = action,
-                    Tone = MapTone(scenario.Input.Tone),
-                    Language = MapLanguage(scenario.Input.Language),
-                    Creativity = SmsCreativity.Low
-                };
-
-                var responses = await _provider.ExecuteAsync(request, cancellationToken);
-
-                foreach (var response in responses)
-                {
-                    var result = new BenchmarkResult
-                    {
-                        Id = Guid.NewGuid(),
-                        BenchmarkRunId = run.Id,
-                        Timestamp = DateTime.UtcNow,
-                        ScenarioId = scenario.Id ?? string.Empty,
-                        Provider = response.Provider ?? string.Empty,
-                        Model = response.Model ?? string.Empty,
-                        Action = scenario.Action ?? string.Empty,
-                        Language = scenario.Input.Language ?? string.Empty,
-                        InputPrompt = request.UserText ?? string.Empty,
-                        Output = response.Output ?? string.Empty,
-                        PredictedInputTokens = response.InputPrediction?.PredictedInputTokens ?? 0,
-                        InputTokens = response.Tokens.InputTokens,
-                        OutputTokens = response.Tokens.OutputTokens,
-                        EstimatedCost = 0,
-                        EndToEndLatencyMs = response.Latency.EndToEndLatencyMs,
-                        ProviderLatencyMs = response.Latency.ProviderLatencyMs,
-                        OutputCharacters = response.Output?.Length ?? 0,
-                        Success = response.Success,
-                        Error = response.Error,
-                        RawResponse = response.RawResponse,
-                        Temperature = response.Temperature,
-                        TokenEstimator = response.InputPrediction?.TokenEstimator,
-                        InputTokenDelta = response.InputPrediction?.InputTokenDelta,
-                        InputTokenErrorPercent = response.InputPrediction?.InputTokenErrorPercent,
-                        SystemPrompt = response.SystemPrompt ?? string.Empty,
-                        OutputEstimatedSmsSegmentsQtd = SmsSegmentCalculator.Calculate(response.Output ?? string.Empty),
-                    };
-
-                    _dbContext.BenchmarkResults.Add(result);
-
-                    run.TotalExecutions++;
-                    if (response.Success)
-                        run.SuccessCount++;
-                    else
+                        run.TotalExecutions++;
                         run.FailureCount++;
 
-                    #region ValidateOutput
-
-                    var deterministicValidators = _validators.Where(x => x.ValidationType != ValidatorType.LlmJudge);
-                    var judgeValidators =_validators.Where(x => x.ValidationType == ValidatorType.LlmJudge);
-
-                    foreach (var validator in deterministicValidators)
-                    {
-                        var validationResult = await validator.ValidateAsync(scenario, result, cancellationToken);
-                        result.Validations.Add(validationResult);
-                        _dbContext.BenchmarkValidationResults.Add(validationResult);
+                        continue;
                     }
 
-                    var judgeDecision = _judgeDecisionService.Evaluate(scenario, result);
-                    if (judgeDecision.ShouldRunJudge)
+                    #endregion
+
+                    _ = SmsActionParser.TryParse(scenario.Action, out SmsAction action);
+                    var request = new LLMRequest
                     {
-                        foreach (var validator in judgeValidators)
+                        UserText = scenario.Input.Prompt ?? scenario.Input.InputText ?? string.Empty,
+                        Action = action,
+                        Tone = MapTone(scenario.Input.Tone),
+                        Language = MapLanguage(scenario.Input.Language),
+                        Creativity = SmsCreativity.Low
+                    };
+
+                    var responses = await providerInstance.ExecuteAsync(request, cancellationToken);
+
+                    foreach (var response in responses)
+                    {
+                        var result = new BenchmarkResult
+                        {
+                            Id = Guid.NewGuid(),
+                            BenchmarkRunId = run.Id,
+                            Timestamp = DateTime.UtcNow,
+                            ScenarioId = scenario.Id ?? string.Empty,
+                            Provider = response.Provider ?? string.Empty,
+                            Model = response.Model ?? string.Empty,
+                            Action = scenario.Action ?? string.Empty,
+                            Language = scenario.Input.Language ?? string.Empty,
+                            InputPrompt = request.UserText ?? string.Empty,
+                            Output = response.Output ?? string.Empty,
+                            PredictedInputTokens = response.InputPrediction?.PredictedInputTokens ?? 0,
+                            InputTokens = response.Tokens.InputTokens,
+                            OutputTokens = response.Tokens.OutputTokens,
+                            EstimatedCost = 0,
+                            EndToEndLatencyMs = response.Latency.EndToEndLatencyMs,
+                            ProviderLatencyMs = response.Latency.ProviderLatencyMs,
+                            OutputCharacters = response.Output?.Length ?? 0,
+                            Success = response.Success,
+                            Error = response.Error,
+                            RawResponse = response.RawResponse,
+                            Temperature = response.Temperature,
+                            TokenEstimator = response.InputPrediction?.TokenEstimator,
+                            InputTokenDelta = response.InputPrediction?.InputTokenDelta,
+                            InputTokenErrorPercent = response.InputPrediction?.InputTokenErrorPercent,
+                            SystemPrompt = response.SystemPrompt ?? string.Empty,
+                            OutputEstimatedSmsSegmentsQtd = SmsSegmentCalculator.Calculate(response.Output ?? string.Empty),
+                        };
+
+                        _dbContext.BenchmarkResults.Add(result);
+
+                        run.TotalExecutions++;
+                        if (response.Success)
+                            run.SuccessCount++;
+                        else
+                            run.FailureCount++;
+
+                        #region ValidateOutput
+
+                        var deterministicValidators = _validators.Where(x => x.ValidationType != ValidatorType.LlmJudge);
+                        var judgeValidators = _validators.Where(x => x.ValidationType == ValidatorType.LlmJudge);
+
+                        foreach (var validator in deterministicValidators)
                         {
                             var validationResult = await validator.ValidateAsync(scenario, result, cancellationToken);
                             result.Validations.Add(validationResult);
                             _dbContext.BenchmarkValidationResults.Add(validationResult);
                         }
+
+                        var judgeDecision = _judgeDecisionService.Evaluate(scenario, result);
+                        if (judgeDecision.ShouldRunJudge)
+                        {
+                            foreach (var validator in judgeValidators)
+                            {
+                                var validationResult = await validator.ValidateAsync(scenario, result, cancellationToken);
+                                result.Validations.Add(validationResult);
+                                _dbContext.BenchmarkValidationResults.Add(validationResult);
+                            }
+                        }
+
+                        #endregion
+
+                        await _dbContext.SaveChangesAsync(cancellationToken);
                     }
-
-                    #endregion
-
-                    await _dbContext.SaveChangesAsync(cancellationToken);
                 }
             }
 

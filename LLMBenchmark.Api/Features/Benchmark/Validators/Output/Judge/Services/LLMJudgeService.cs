@@ -23,13 +23,14 @@ public sealed class LLMJudgeService : ILLMJudgeService
     private readonly ITokenEstimatorFactory _tokenEstimatorFactory;
     private const string JudgeModel = "gpt-4.1-mini";
 
-    public LLMJudgeService(IOptions<GitHubModelsOptions> options, ITokenEstimatorFactory tokenEstimatorFactory)
+    public LLMJudgeService(IOptionsMonitor<LLMProviderOptions> options, ITokenEstimatorFactory tokenEstimatorFactory)
     {
+        var githubOptions = options.Get("GitHubModels");
         _tokenEstimatorFactory = tokenEstimatorFactory;
         _api = new TornadoApi(
             new OpenAiEndpointProvider
             {
-                Auth = new ProviderAuthentication(options.Value.ApiKey),
+                Auth = new ProviderAuthentication(githubOptions.ApiKey),
                 UrlResolver = (_, _, _) =>
                     "https://models.github.ai/inference/chat/completions"
             });
