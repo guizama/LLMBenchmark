@@ -1,0 +1,25 @@
+{
+"SELECT\r\n    \"Id\",\r\n    \"StartedAtUtc\",\r\n    \"FinishedAtUtc\",\r\n    EXTRACT(\r\n        EPOCH FROM (\r\n            \"FinishedAtUtc\" - \"StartedAtUtc\"\r\n        )\r\n    )                                         AS \"DurationSeconds\",\r\n    \"Status\",\r\n    \"TotalScenarios\",\r\n    \"TotalExecutions\",\r\n    \"SuccessCount\",\r\n    \"FailureCount\"\r\nFROM public.\"BenchmarkRuns\"\r\nORDER BY \"StartedAtUtc\" DESC": [
+	{
+		"Id" : "e205a850-fff0-4059-9eb7-6613dbff411c",
+		"StartedAtUtc" : "2026-06-16T13:11:41.371Z",
+		"FinishedAtUtc" : "2026-06-16T13:17:50.654Z",
+		"DurationSeconds" : 369.282917,
+		"Status" : "Running",
+		"TotalScenarios" : 19,
+		"TotalExecutions" : 76,
+		"SuccessCount" : 74,
+		"FailureCount" : 2
+	},
+	{
+		"Id" : "27b91409-f74c-463d-98ed-73ce8ef98197",
+		"StartedAtUtc" : "2026-06-16T12:51:41.099Z",
+		"FinishedAtUtc" : "2026-06-16T12:56:18.798Z",
+		"DurationSeconds" : 277.699865,
+		"Status" : "Running",
+		"TotalScenarios" : 19,
+		"TotalExecutions" : 76,
+		"SuccessCount" : 75,
+		"FailureCount" : 1
+	}
+]}

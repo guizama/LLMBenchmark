@@ -1,0 +1,1163 @@
+{
+"SELECT\r\n    r.\"Provider\",\r\n    r.\"Model\",\r\n    r.\"Action\",\r\n    vr.\"Validator\",\r\n    COUNT(*)                                AS \"Total\",\r\n    COUNT(*) FILTER (\r\n        WHERE vr.\"Passed\" = true\r\n    )                                       AS \"Passed\",\r\n    COUNT(*) FILTER (\r\n        WHERE vr.\"Passed\" = false\r\n    )                                       AS \"Failed\",\r\n    AVG(vr.\"Score\")                         AS \"AverageScore\"\r\nFROM public.\"BenchmarkResults\" r\r\nINNER JOIN public.\"BenchmarkValidationResults\" vr\r\n    ON vr.\"BenchmarkResultId\" = r.\"Id\"\r\nGROUP BY\r\n    r.\"Provider\",\r\n    r.\"Model\",\r\n    r.\"Action\",\r\n    vr.\"Validator\"\r\nORDER BY\r\n    r.\"Model\",\r\n    vr.\"Validator\"": [
+	{
+		"Provider" : "openai -> OpenAI",
+		"Model" : "gpt-4.1-mini",
+		"Action" : "sms.fixGrammar",
+		"Validator" : "CriticalInfoValidator",
+		"Total" : 2,
+		"Passed" : 2,
+		"Failed" : 0,
+		"AverageScore" : null
+	},
+	{
+		"Provider" : "openai -> OpenAI",
+		"Model" : "gpt-4.1-mini",
+		"Action" : "sms.expand",
+		"Validator" : "CriticalInfoValidator",
+		"Total" : 2,
+		"Passed" : 2,
+		"Failed" : 0,
+		"AverageScore" : null
+	},
+	{
+		"Provider" : "openai -> OpenAI",
+		"Model" : "gpt-4.1-mini",
+		"Action" : "sms.shorten",
+		"Validator" : "CriticalInfoValidator",
+		"Total" : 2,
+		"Passed" : 2,
+		"Failed" : 0,
+		"AverageScore" : null
+	},
+	{
+		"Provider" : "github-models -> OpenAI",
+		"Model" : "gpt-4.1-mini",
+		"Action" : "sms.rewrite",
+		"Validator" : "CriticalInfoValidator",
+		"Total" : 9,
+		"Passed" : 9,
+		"Failed" : 0,
+		"AverageScore" : null
+	},
+	{
+		"Provider" : "openai -> OpenAI",
+		"Model" : "gpt-4.1-mini",
+		"Action" : "sms.formalize",
+		"Validator" : "CriticalInfoValidator",
+		"Total" : 2,
+		"Passed" : 2,
+		"Failed" : 0,
+		"AverageScore" : null
+	},
+	{
+		"Provider" : "github-models -> OpenAI",
+		"Model" : "gpt-4.1-mini",
+		"Action" : "sms.expand",
+		"Validator" : "CriticalInfoValidator",
+		"Total" : 3,
+		"Passed" : 3,
+		"Failed" : 0,
+		"AverageScore" : null
+	},
+	{
+		"Provider" : "openai -> OpenAI",
+		"Model" : "gpt-4.1-mini",
+		"Action" : "sms.generate",
+		"Validator" : "CriticalInfoValidator",
+		"Total" : 23,
+		"Passed" : 23,
+		"Failed" : 0,
+		"AverageScore" : null
+	},
+	{
+		"Provider" : "openai -> OpenAI",
+		"Model" : "gpt-4.1-mini",
+		"Action" : "sms.rewrite",
+		"Validator" : "CriticalInfoValidator",
+		"Total" : 6,
+		"Passed" : 6,
+		"Failed" : 0,
+		"AverageScore" : null
+	},
+	{
+		"Provider" : "github-models -> OpenAI",
+		"Model" : "gpt-4.1-mini",
+		"Action" : "sms.shorten",
+		"Validator" : "CriticalInfoValidator",
+		"Total" : 3,
+		"Passed" : 3,
+		"Failed" : 0,
+		"AverageScore" : null
+	},
+	{
+		"Provider" : "github-models -> OpenAI",
+		"Model" : "gpt-4.1-mini",
+		"Action" : "sms.formalize",
+		"Validator" : "CriticalInfoValidator",
+		"Total" : 3,
+		"Passed" : 3,
+		"Failed" : 0,
+		"AverageScore" : null
+	},
+	{
+		"Provider" : "github-models -> OpenAI",
+		"Model" : "gpt-4.1-mini",
+		"Action" : "sms.casualize",
+		"Validator" : "CriticalInfoValidator",
+		"Total" : 3,
+		"Passed" : 3,
+		"Failed" : 0,
+		"AverageScore" : null
+	},
+	{
+		"Provider" : "openai -> OpenAI",
+		"Model" : "gpt-4.1-mini",
+		"Action" : "sms.casualize",
+		"Validator" : "CriticalInfoValidator",
+		"Total" : 2,
+		"Passed" : 2,
+		"Failed" : 0,
+		"AverageScore" : null
+	},
+	{
+		"Provider" : "github-models -> OpenAI",
+		"Model" : "gpt-4.1-mini",
+		"Action" : "sms.fixGrammar",
+		"Validator" : "CriticalInfoValidator",
+		"Total" : 3,
+		"Passed" : 3,
+		"Failed" : 0,
+		"AverageScore" : null
+	},
+	{
+		"Provider" : "github-models -> OpenAI",
+		"Model" : "gpt-4.1-mini",
+		"Action" : "sms.generate",
+		"Validator" : "CriticalInfoValidator",
+		"Total" : 28,
+		"Passed" : 28,
+		"Failed" : 0,
+		"AverageScore" : null
+	},
+	{
+		"Provider" : "openai -> OpenAI",
+		"Model" : "gpt-4.1-mini",
+		"Action" : "sms.casualize",
+		"Validator" : "LinkValidator",
+		"Total" : 2,
+		"Passed" : 2,
+		"Failed" : 0,
+		"AverageScore" : null
+	},
+	{
+		"Provider" : "openai -> OpenAI",
+		"Model" : "gpt-4.1-mini",
+		"Action" : "sms.shorten",
+		"Validator" : "LinkValidator",
+		"Total" : 2,
+		"Passed" : 2,
+		"Failed" : 0,
+		"AverageScore" : null
+	},
+	{
+		"Provider" : "github-models -> OpenAI",
+		"Model" : "gpt-4.1-mini",
+		"Action" : "sms.generate",
+		"Validator" : "LinkValidator",
+		"Total" : 28,
+		"Passed" : 28,
+		"Failed" : 0,
+		"AverageScore" : null
+	},
+	{
+		"Provider" : "openai -> OpenAI",
+		"Model" : "gpt-4.1-mini",
+		"Action" : "sms.formalize",
+		"Validator" : "LinkValidator",
+		"Total" : 2,
+		"Passed" : 2,
+		"Failed" : 0,
+		"AverageScore" : null
+	},
+	{
+		"Provider" : "openai -> OpenAI",
+		"Model" : "gpt-4.1-mini",
+		"Action" : "sms.generate",
+		"Validator" : "LinkValidator",
+		"Total" : 23,
+		"Passed" : 23,
+		"Failed" : 0,
+		"AverageScore" : null
+	},
+	{
+		"Provider" : "openai -> OpenAI",
+		"Model" : "gpt-4.1-mini",
+		"Action" : "sms.fixGrammar",
+		"Validator" : "LinkValidator",
+		"Total" : 2,
+		"Passed" : 2,
+		"Failed" : 0,
+		"AverageScore" : null
+	},
+	{
+		"Provider" : "openai -> OpenAI",
+		"Model" : "gpt-4.1-mini",
+		"Action" : "sms.rewrite",
+		"Validator" : "LinkValidator",
+		"Total" : 6,
+		"Passed" : 6,
+		"Failed" : 0,
+		"AverageScore" : null
+	},
+	{
+		"Provider" : "github-models -> OpenAI",
+		"Model" : "gpt-4.1-mini",
+		"Action" : "sms.formalize",
+		"Validator" : "LinkValidator",
+		"Total" : 3,
+		"Passed" : 3,
+		"Failed" : 0,
+		"AverageScore" : null
+	},
+	{
+		"Provider" : "github-models -> OpenAI",
+		"Model" : "gpt-4.1-mini",
+		"Action" : "sms.rewrite",
+		"Validator" : "LinkValidator",
+		"Total" : 9,
+		"Passed" : 9,
+		"Failed" : 0,
+		"AverageScore" : null
+	},
+	{
+		"Provider" : "github-models -> OpenAI",
+		"Model" : "gpt-4.1-mini",
+		"Action" : "sms.shorten",
+		"Validator" : "LinkValidator",
+		"Total" : 3,
+		"Passed" : 3,
+		"Failed" : 0,
+		"AverageScore" : null
+	},
+	{
+		"Provider" : "github-models -> OpenAI",
+		"Model" : "gpt-4.1-mini",
+		"Action" : "sms.casualize",
+		"Validator" : "LinkValidator",
+		"Total" : 3,
+		"Passed" : 3,
+		"Failed" : 0,
+		"AverageScore" : null
+	},
+	{
+		"Provider" : "openai -> OpenAI",
+		"Model" : "gpt-4.1-mini",
+		"Action" : "sms.expand",
+		"Validator" : "LinkValidator",
+		"Total" : 2,
+		"Passed" : 2,
+		"Failed" : 0,
+		"AverageScore" : null
+	},
+	{
+		"Provider" : "github-models -> OpenAI",
+		"Model" : "gpt-4.1-mini",
+		"Action" : "sms.fixGrammar",
+		"Validator" : "LinkValidator",
+		"Total" : 3,
+		"Passed" : 3,
+		"Failed" : 0,
+		"AverageScore" : null
+	},
+	{
+		"Provider" : "github-models -> OpenAI",
+		"Model" : "gpt-4.1-mini",
+		"Action" : "sms.expand",
+		"Validator" : "LinkValidator",
+		"Total" : 3,
+		"Passed" : 3,
+		"Failed" : 0,
+		"AverageScore" : null
+	},
+	{
+		"Provider" : "openai -> OpenAI",
+		"Model" : "gpt-4.1-mini",
+		"Action" : "sms.casualize",
+		"Validator" : "PlaceholderValidator",
+		"Total" : 2,
+		"Passed" : 2,
+		"Failed" : 0,
+		"AverageScore" : null
+	},
+	{
+		"Provider" : "github-models -> OpenAI",
+		"Model" : "gpt-4.1-mini",
+		"Action" : "sms.rewrite",
+		"Validator" : "PlaceholderValidator",
+		"Total" : 9,
+		"Passed" : 9,
+		"Failed" : 0,
+		"AverageScore" : null
+	},
+	{
+		"Provider" : "github-models -> OpenAI",
+		"Model" : "gpt-4.1-mini",
+		"Action" : "sms.generate",
+		"Validator" : "PlaceholderValidator",
+		"Total" : 28,
+		"Passed" : 28,
+		"Failed" : 0,
+		"AverageScore" : null
+	},
+	{
+		"Provider" : "openai -> OpenAI",
+		"Model" : "gpt-4.1-mini",
+		"Action" : "sms.fixGrammar",
+		"Validator" : "PlaceholderValidator",
+		"Total" : 2,
+		"Passed" : 2,
+		"Failed" : 0,
+		"AverageScore" : null
+	},
+	{
+		"Provider" : "openai -> OpenAI",
+		"Model" : "gpt-4.1-mini",
+		"Action" : "sms.expand",
+		"Validator" : "PlaceholderValidator",
+		"Total" : 2,
+		"Passed" : 2,
+		"Failed" : 0,
+		"AverageScore" : null
+	},
+	{
+		"Provider" : "github-models -> OpenAI",
+		"Model" : "gpt-4.1-mini",
+		"Action" : "sms.casualize",
+		"Validator" : "PlaceholderValidator",
+		"Total" : 3,
+		"Passed" : 3,
+		"Failed" : 0,
+		"AverageScore" : null
+	},
+	{
+		"Provider" : "github-models -> OpenAI",
+		"Model" : "gpt-4.1-mini",
+		"Action" : "sms.fixGrammar",
+		"Validator" : "PlaceholderValidator",
+		"Total" : 3,
+		"Passed" : 3,
+		"Failed" : 0,
+		"AverageScore" : null
+	},
+	{
+		"Provider" : "openai -> OpenAI",
+		"Model" : "gpt-4.1-mini",
+		"Action" : "sms.generate",
+		"Validator" : "PlaceholderValidator",
+		"Total" : 23,
+		"Passed" : 23,
+		"Failed" : 0,
+		"AverageScore" : null
+	},
+	{
+		"Provider" : "openai -> OpenAI",
+		"Model" : "gpt-4.1-mini",
+		"Action" : "sms.formalize",
+		"Validator" : "PlaceholderValidator",
+		"Total" : 2,
+		"Passed" : 2,
+		"Failed" : 0,
+		"AverageScore" : null
+	},
+	{
+		"Provider" : "openai -> OpenAI",
+		"Model" : "gpt-4.1-mini",
+		"Action" : "sms.shorten",
+		"Validator" : "PlaceholderValidator",
+		"Total" : 2,
+		"Passed" : 2,
+		"Failed" : 0,
+		"AverageScore" : null
+	},
+	{
+		"Provider" : "openai -> OpenAI",
+		"Model" : "gpt-4.1-mini",
+		"Action" : "sms.rewrite",
+		"Validator" : "PlaceholderValidator",
+		"Total" : 6,
+		"Passed" : 6,
+		"Failed" : 0,
+		"AverageScore" : null
+	},
+	{
+		"Provider" : "github-models -> OpenAI",
+		"Model" : "gpt-4.1-mini",
+		"Action" : "sms.formalize",
+		"Validator" : "PlaceholderValidator",
+		"Total" : 3,
+		"Passed" : 3,
+		"Failed" : 0,
+		"AverageScore" : null
+	},
+	{
+		"Provider" : "github-models -> OpenAI",
+		"Model" : "gpt-4.1-mini",
+		"Action" : "sms.shorten",
+		"Validator" : "PlaceholderValidator",
+		"Total" : 3,
+		"Passed" : 3,
+		"Failed" : 0,
+		"AverageScore" : null
+	},
+	{
+		"Provider" : "github-models -> OpenAI",
+		"Model" : "gpt-4.1-mini",
+		"Action" : "sms.expand",
+		"Validator" : "PlaceholderValidator",
+		"Total" : 3,
+		"Passed" : 3,
+		"Failed" : 0,
+		"AverageScore" : null
+	},
+	{
+		"Provider" : "github-models -> OpenAI",
+		"Model" : "gpt-4.1-mini",
+		"Action" : "sms.generate",
+		"Validator" : "ScenarioJudgeValidator",
+		"Total" : 28,
+		"Passed" : 22,
+		"Failed" : 6,
+		"AverageScore" : 7.964285714285714
+	},
+	{
+		"Provider" : "github-models -> OpenAI",
+		"Model" : "gpt-4.1-mini",
+		"Action" : "sms.fixGrammar",
+		"Validator" : "ScenarioJudgeValidator",
+		"Total" : 3,
+		"Passed" : 3,
+		"Failed" : 0,
+		"AverageScore" : 9.0
+	},
+	{
+		"Provider" : "openai -> OpenAI",
+		"Model" : "gpt-4.1-mini",
+		"Action" : "sms.expand",
+		"Validator" : "ScenarioJudgeValidator",
+		"Total" : 2,
+		"Passed" : 1,
+		"Failed" : 1,
+		"AverageScore" : 7.0
+	},
+	{
+		"Provider" : "openai -> OpenAI",
+		"Model" : "gpt-4.1-mini",
+		"Action" : "sms.shorten",
+		"Validator" : "ScenarioJudgeValidator",
+		"Total" : 2,
+		"Passed" : 2,
+		"Failed" : 0,
+		"AverageScore" : 9.0
+	},
+	{
+		"Provider" : "openai -> OpenAI",
+		"Model" : "gpt-4.1-mini",
+		"Action" : "sms.rewrite",
+		"Validator" : "ScenarioJudgeValidator",
+		"Total" : 6,
+		"Passed" : 6,
+		"Failed" : 0,
+		"AverageScore" : 9.0
+	},
+	{
+		"Provider" : "openai -> OpenAI",
+		"Model" : "gpt-4.1-mini",
+		"Action" : "sms.fixGrammar",
+		"Validator" : "ScenarioJudgeValidator",
+		"Total" : 2,
+		"Passed" : 2,
+		"Failed" : 0,
+		"AverageScore" : 9.0
+	},
+	{
+		"Provider" : "openai -> OpenAI",
+		"Model" : "gpt-4.1-mini",
+		"Action" : "sms.generate",
+		"Validator" : "ScenarioJudgeValidator",
+		"Total" : 23,
+		"Passed" : 21,
+		"Failed" : 2,
+		"AverageScore" : 8.565217391304348
+	},
+	{
+		"Provider" : "github-models -> OpenAI",
+		"Model" : "gpt-4.1-mini",
+		"Action" : "sms.casualize",
+		"Validator" : "ScenarioJudgeValidator",
+		"Total" : 3,
+		"Passed" : 3,
+		"Failed" : 0,
+		"AverageScore" : 9.0
+	},
+	{
+		"Provider" : "openai -> OpenAI",
+		"Model" : "gpt-4.1-mini",
+		"Action" : "sms.formalize",
+		"Validator" : "ScenarioJudgeValidator",
+		"Total" : 2,
+		"Passed" : 2,
+		"Failed" : 0,
+		"AverageScore" : 9.0
+	},
+	{
+		"Provider" : "github-models -> OpenAI",
+		"Model" : "gpt-4.1-mini",
+		"Action" : "sms.formalize",
+		"Validator" : "ScenarioJudgeValidator",
+		"Total" : 3,
+		"Passed" : 3,
+		"Failed" : 0,
+		"AverageScore" : 9.0
+	},
+	{
+		"Provider" : "github-models -> OpenAI",
+		"Model" : "gpt-4.1-mini",
+		"Action" : "sms.shorten",
+		"Validator" : "ScenarioJudgeValidator",
+		"Total" : 3,
+		"Passed" : 3,
+		"Failed" : 0,
+		"AverageScore" : 9.0
+	},
+	{
+		"Provider" : "github-models -> OpenAI",
+		"Model" : "gpt-4.1-mini",
+		"Action" : "sms.expand",
+		"Validator" : "ScenarioJudgeValidator",
+		"Total" : 3,
+		"Passed" : 1,
+		"Failed" : 2,
+		"AverageScore" : 6.0
+	},
+	{
+		"Provider" : "github-models -> OpenAI",
+		"Model" : "gpt-4.1-mini",
+		"Action" : "sms.rewrite",
+		"Validator" : "ScenarioJudgeValidator",
+		"Total" : 9,
+		"Passed" : 9,
+		"Failed" : 0,
+		"AverageScore" : 9.0
+	},
+	{
+		"Provider" : "openai -> OpenAI",
+		"Model" : "gpt-4.1-mini",
+		"Action" : "sms.casualize",
+		"Validator" : "ScenarioJudgeValidator",
+		"Total" : 2,
+		"Passed" : 2,
+		"Failed" : 0,
+		"AverageScore" : 9.0
+	},
+	{
+		"Provider" : "openai -> OpenAI",
+		"Model" : "gpt-5.4-mini",
+		"Action" : "sms.shorten",
+		"Validator" : "CriticalInfoValidator",
+		"Total" : 2,
+		"Passed" : 2,
+		"Failed" : 0,
+		"AverageScore" : null
+	},
+	{
+		"Provider" : "openai -> OpenAI",
+		"Model" : "gpt-5.4-mini",
+		"Action" : "sms.rewrite",
+		"Validator" : "CriticalInfoValidator",
+		"Total" : 6,
+		"Passed" : 6,
+		"Failed" : 0,
+		"AverageScore" : null
+	},
+	{
+		"Provider" : "openai -> OpenAI",
+		"Model" : "gpt-5.4-mini",
+		"Action" : "sms.generate",
+		"Validator" : "CriticalInfoValidator",
+		"Total" : 23,
+		"Passed" : 23,
+		"Failed" : 0,
+		"AverageScore" : null
+	},
+	{
+		"Provider" : "openai -> OpenAI",
+		"Model" : "gpt-5.4-mini",
+		"Action" : "sms.expand",
+		"Validator" : "CriticalInfoValidator",
+		"Total" : 2,
+		"Passed" : 2,
+		"Failed" : 0,
+		"AverageScore" : null
+	},
+	{
+		"Provider" : "openai -> OpenAI",
+		"Model" : "gpt-5.4-mini",
+		"Action" : "sms.formalize",
+		"Validator" : "CriticalInfoValidator",
+		"Total" : 2,
+		"Passed" : 2,
+		"Failed" : 0,
+		"AverageScore" : null
+	},
+	{
+		"Provider" : "openai -> OpenAI",
+		"Model" : "gpt-5.4-mini",
+		"Action" : "sms.fixGrammar",
+		"Validator" : "CriticalInfoValidator",
+		"Total" : 2,
+		"Passed" : 2,
+		"Failed" : 0,
+		"AverageScore" : null
+	},
+	{
+		"Provider" : "openai -> OpenAI",
+		"Model" : "gpt-5.4-mini",
+		"Action" : "sms.casualize",
+		"Validator" : "CriticalInfoValidator",
+		"Total" : 2,
+		"Passed" : 2,
+		"Failed" : 0,
+		"AverageScore" : null
+	},
+	{
+		"Provider" : "openai -> OpenAI",
+		"Model" : "gpt-5.4-mini",
+		"Action" : "sms.rewrite",
+		"Validator" : "LinkValidator",
+		"Total" : 6,
+		"Passed" : 6,
+		"Failed" : 0,
+		"AverageScore" : null
+	},
+	{
+		"Provider" : "openai -> OpenAI",
+		"Model" : "gpt-5.4-mini",
+		"Action" : "sms.generate",
+		"Validator" : "LinkValidator",
+		"Total" : 23,
+		"Passed" : 23,
+		"Failed" : 0,
+		"AverageScore" : null
+	},
+	{
+		"Provider" : "openai -> OpenAI",
+		"Model" : "gpt-5.4-mini",
+		"Action" : "sms.fixGrammar",
+		"Validator" : "LinkValidator",
+		"Total" : 2,
+		"Passed" : 2,
+		"Failed" : 0,
+		"AverageScore" : null
+	},
+	{
+		"Provider" : "openai -> OpenAI",
+		"Model" : "gpt-5.4-mini",
+		"Action" : "sms.shorten",
+		"Validator" : "LinkValidator",
+		"Total" : 2,
+		"Passed" : 2,
+		"Failed" : 0,
+		"AverageScore" : null
+	},
+	{
+		"Provider" : "openai -> OpenAI",
+		"Model" : "gpt-5.4-mini",
+		"Action" : "sms.casualize",
+		"Validator" : "LinkValidator",
+		"Total" : 2,
+		"Passed" : 2,
+		"Failed" : 0,
+		"AverageScore" : null
+	},
+	{
+		"Provider" : "openai -> OpenAI",
+		"Model" : "gpt-5.4-mini",
+		"Action" : "sms.expand",
+		"Validator" : "LinkValidator",
+		"Total" : 2,
+		"Passed" : 2,
+		"Failed" : 0,
+		"AverageScore" : null
+	},
+	{
+		"Provider" : "openai -> OpenAI",
+		"Model" : "gpt-5.4-mini",
+		"Action" : "sms.formalize",
+		"Validator" : "LinkValidator",
+		"Total" : 2,
+		"Passed" : 2,
+		"Failed" : 0,
+		"AverageScore" : null
+	},
+	{
+		"Provider" : "openai -> OpenAI",
+		"Model" : "gpt-5.4-mini",
+		"Action" : "sms.rewrite",
+		"Validator" : "PlaceholderValidator",
+		"Total" : 6,
+		"Passed" : 6,
+		"Failed" : 0,
+		"AverageScore" : null
+	},
+	{
+		"Provider" : "openai -> OpenAI",
+		"Model" : "gpt-5.4-mini",
+		"Action" : "sms.formalize",
+		"Validator" : "PlaceholderValidator",
+		"Total" : 2,
+		"Passed" : 2,
+		"Failed" : 0,
+		"AverageScore" : null
+	},
+	{
+		"Provider" : "openai -> OpenAI",
+		"Model" : "gpt-5.4-mini",
+		"Action" : "sms.shorten",
+		"Validator" : "PlaceholderValidator",
+		"Total" : 2,
+		"Passed" : 2,
+		"Failed" : 0,
+		"AverageScore" : null
+	},
+	{
+		"Provider" : "openai -> OpenAI",
+		"Model" : "gpt-5.4-mini",
+		"Action" : "sms.fixGrammar",
+		"Validator" : "PlaceholderValidator",
+		"Total" : 2,
+		"Passed" : 2,
+		"Failed" : 0,
+		"AverageScore" : null
+	},
+	{
+		"Provider" : "openai -> OpenAI",
+		"Model" : "gpt-5.4-mini",
+		"Action" : "sms.expand",
+		"Validator" : "PlaceholderValidator",
+		"Total" : 2,
+		"Passed" : 2,
+		"Failed" : 0,
+		"AverageScore" : null
+	},
+	{
+		"Provider" : "openai -> OpenAI",
+		"Model" : "gpt-5.4-mini",
+		"Action" : "sms.casualize",
+		"Validator" : "PlaceholderValidator",
+		"Total" : 2,
+		"Passed" : 2,
+		"Failed" : 0,
+		"AverageScore" : null
+	},
+	{
+		"Provider" : "openai -> OpenAI",
+		"Model" : "gpt-5.4-mini",
+		"Action" : "sms.generate",
+		"Validator" : "PlaceholderValidator",
+		"Total" : 23,
+		"Passed" : 23,
+		"Failed" : 0,
+		"AverageScore" : null
+	},
+	{
+		"Provider" : "openai -> OpenAI",
+		"Model" : "gpt-5.4-mini",
+		"Action" : "sms.fixGrammar",
+		"Validator" : "ScenarioJudgeValidator",
+		"Total" : 2,
+		"Passed" : 2,
+		"Failed" : 0,
+		"AverageScore" : 9.0
+	},
+	{
+		"Provider" : "openai -> OpenAI",
+		"Model" : "gpt-5.4-mini",
+		"Action" : "sms.expand",
+		"Validator" : "ScenarioJudgeValidator",
+		"Total" : 2,
+		"Passed" : 2,
+		"Failed" : 0,
+		"AverageScore" : 9.0
+	},
+	{
+		"Provider" : "openai -> OpenAI",
+		"Model" : "gpt-5.4-mini",
+		"Action" : "sms.rewrite",
+		"Validator" : "ScenarioJudgeValidator",
+		"Total" : 6,
+		"Passed" : 6,
+		"Failed" : 0,
+		"AverageScore" : 9.666666666666666
+	},
+	{
+		"Provider" : "openai -> OpenAI",
+		"Model" : "gpt-5.4-mini",
+		"Action" : "sms.formalize",
+		"Validator" : "ScenarioJudgeValidator",
+		"Total" : 2,
+		"Passed" : 2,
+		"Failed" : 0,
+		"AverageScore" : 9.0
+	},
+	{
+		"Provider" : "openai -> OpenAI",
+		"Model" : "gpt-5.4-mini",
+		"Action" : "sms.shorten",
+		"Validator" : "ScenarioJudgeValidator",
+		"Total" : 2,
+		"Passed" : 2,
+		"Failed" : 0,
+		"AverageScore" : 9.0
+	},
+	{
+		"Provider" : "openai -> OpenAI",
+		"Model" : "gpt-5.4-mini",
+		"Action" : "sms.casualize",
+		"Validator" : "ScenarioJudgeValidator",
+		"Total" : 2,
+		"Passed" : 2,
+		"Failed" : 0,
+		"AverageScore" : 9.0
+	},
+	{
+		"Provider" : "openai -> OpenAI",
+		"Model" : "gpt-5.4-mini",
+		"Action" : "sms.generate",
+		"Validator" : "ScenarioJudgeValidator",
+		"Total" : 23,
+		"Passed" : 22,
+		"Failed" : 1,
+		"AverageScore" : 8.956521739130435
+	},
+	{
+		"Provider" : "github-models -> Meta",
+		"Model" : "llama-3.3-70b-instruct",
+		"Action" : "sms.shorten",
+		"Validator" : "CriticalInfoValidator",
+		"Total" : 2,
+		"Passed" : 2,
+		"Failed" : 0,
+		"AverageScore" : null
+	},
+	{
+		"Provider" : "github-models -> Meta",
+		"Model" : "llama-3.3-70b-instruct",
+		"Action" : "sms.casualize",
+		"Validator" : "CriticalInfoValidator",
+		"Total" : 3,
+		"Passed" : 3,
+		"Failed" : 0,
+		"AverageScore" : null
+	},
+	{
+		"Provider" : "github-models -> Meta",
+		"Model" : "llama-3.3-70b-instruct",
+		"Action" : "sms.generate",
+		"Validator" : "CriticalInfoValidator",
+		"Total" : 28,
+		"Passed" : 28,
+		"Failed" : 0,
+		"AverageScore" : null
+	},
+	{
+		"Provider" : "github-models -> Meta",
+		"Model" : "llama-3.3-70b-instruct",
+		"Action" : "sms.fixGrammar",
+		"Validator" : "CriticalInfoValidator",
+		"Total" : 3,
+		"Passed" : 3,
+		"Failed" : 0,
+		"AverageScore" : null
+	},
+	{
+		"Provider" : "github-models -> Meta",
+		"Model" : "llama-3.3-70b-instruct",
+		"Action" : "sms.expand",
+		"Validator" : "CriticalInfoValidator",
+		"Total" : 3,
+		"Passed" : 3,
+		"Failed" : 0,
+		"AverageScore" : null
+	},
+	{
+		"Provider" : "github-models",
+		"Model" : "llama-3.3-70b-instruct",
+		"Action" : "sms.shorten",
+		"Validator" : "CriticalInfoValidator",
+		"Total" : 1,
+		"Passed" : 1,
+		"Failed" : 0,
+		"AverageScore" : null
+	},
+	{
+		"Provider" : "github-models -> Meta",
+		"Model" : "llama-3.3-70b-instruct",
+		"Action" : "sms.formalize",
+		"Validator" : "CriticalInfoValidator",
+		"Total" : 3,
+		"Passed" : 3,
+		"Failed" : 0,
+		"AverageScore" : null
+	},
+	{
+		"Provider" : "github-models -> Meta",
+		"Model" : "llama-3.3-70b-instruct",
+		"Action" : "sms.rewrite",
+		"Validator" : "CriticalInfoValidator",
+		"Total" : 9,
+		"Passed" : 9,
+		"Failed" : 0,
+		"AverageScore" : null
+	},
+	{
+		"Provider" : "github-models",
+		"Model" : "llama-3.3-70b-instruct",
+		"Action" : "sms.shorten",
+		"Validator" : "LinkValidator",
+		"Total" : 1,
+		"Passed" : 1,
+		"Failed" : 0,
+		"AverageScore" : null
+	},
+	{
+		"Provider" : "github-models -> Meta",
+		"Model" : "llama-3.3-70b-instruct",
+		"Action" : "sms.expand",
+		"Validator" : "LinkValidator",
+		"Total" : 3,
+		"Passed" : 3,
+		"Failed" : 0,
+		"AverageScore" : null
+	},
+	{
+		"Provider" : "github-models -> Meta",
+		"Model" : "llama-3.3-70b-instruct",
+		"Action" : "sms.shorten",
+		"Validator" : "LinkValidator",
+		"Total" : 2,
+		"Passed" : 2,
+		"Failed" : 0,
+		"AverageScore" : null
+	},
+	{
+		"Provider" : "github-models -> Meta",
+		"Model" : "llama-3.3-70b-instruct",
+		"Action" : "sms.fixGrammar",
+		"Validator" : "LinkValidator",
+		"Total" : 3,
+		"Passed" : 3,
+		"Failed" : 0,
+		"AverageScore" : null
+	},
+	{
+		"Provider" : "github-models -> Meta",
+		"Model" : "llama-3.3-70b-instruct",
+		"Action" : "sms.formalize",
+		"Validator" : "LinkValidator",
+		"Total" : 3,
+		"Passed" : 3,
+		"Failed" : 0,
+		"AverageScore" : null
+	},
+	{
+		"Provider" : "github-models -> Meta",
+		"Model" : "llama-3.3-70b-instruct",
+		"Action" : "sms.generate",
+		"Validator" : "LinkValidator",
+		"Total" : 28,
+		"Passed" : 25,
+		"Failed" : 3,
+		"AverageScore" : null
+	},
+	{
+		"Provider" : "github-models -> Meta",
+		"Model" : "llama-3.3-70b-instruct",
+		"Action" : "sms.casualize",
+		"Validator" : "LinkValidator",
+		"Total" : 3,
+		"Passed" : 3,
+		"Failed" : 0,
+		"AverageScore" : null
+	},
+	{
+		"Provider" : "github-models -> Meta",
+		"Model" : "llama-3.3-70b-instruct",
+		"Action" : "sms.rewrite",
+		"Validator" : "LinkValidator",
+		"Total" : 9,
+		"Passed" : 9,
+		"Failed" : 0,
+		"AverageScore" : null
+	},
+	{
+		"Provider" : "github-models -> Meta",
+		"Model" : "llama-3.3-70b-instruct",
+		"Action" : "sms.rewrite",
+		"Validator" : "PlaceholderValidator",
+		"Total" : 9,
+		"Passed" : 9,
+		"Failed" : 0,
+		"AverageScore" : null
+	},
+	{
+		"Provider" : "github-models -> Meta",
+		"Model" : "llama-3.3-70b-instruct",
+		"Action" : "sms.expand",
+		"Validator" : "PlaceholderValidator",
+		"Total" : 3,
+		"Passed" : 3,
+		"Failed" : 0,
+		"AverageScore" : null
+	},
+	{
+		"Provider" : "github-models -> Meta",
+		"Model" : "llama-3.3-70b-instruct",
+		"Action" : "sms.casualize",
+		"Validator" : "PlaceholderValidator",
+		"Total" : 3,
+		"Passed" : 3,
+		"Failed" : 0,
+		"AverageScore" : null
+	},
+	{
+		"Provider" : "github-models",
+		"Model" : "llama-3.3-70b-instruct",
+		"Action" : "sms.shorten",
+		"Validator" : "PlaceholderValidator",
+		"Total" : 1,
+		"Passed" : 1,
+		"Failed" : 0,
+		"AverageScore" : null
+	},
+	{
+		"Provider" : "github-models -> Meta",
+		"Model" : "llama-3.3-70b-instruct",
+		"Action" : "sms.shorten",
+		"Validator" : "PlaceholderValidator",
+		"Total" : 2,
+		"Passed" : 2,
+		"Failed" : 0,
+		"AverageScore" : null
+	},
+	{
+		"Provider" : "github-models -> Meta",
+		"Model" : "llama-3.3-70b-instruct",
+		"Action" : "sms.formalize",
+		"Validator" : "PlaceholderValidator",
+		"Total" : 3,
+		"Passed" : 3,
+		"Failed" : 0,
+		"AverageScore" : null
+	},
+	{
+		"Provider" : "github-models -> Meta",
+		"Model" : "llama-3.3-70b-instruct",
+		"Action" : "sms.fixGrammar",
+		"Validator" : "PlaceholderValidator",
+		"Total" : 3,
+		"Passed" : 3,
+		"Failed" : 0,
+		"AverageScore" : null
+	},
+	{
+		"Provider" : "github-models -> Meta",
+		"Model" : "llama-3.3-70b-instruct",
+		"Action" : "sms.generate",
+		"Validator" : "PlaceholderValidator",
+		"Total" : 28,
+		"Passed" : 27,
+		"Failed" : 1,
+		"AverageScore" : null
+	},
+	{
+		"Provider" : "github-models -> Meta",
+		"Model" : "llama-3.3-70b-instruct",
+		"Action" : "sms.rewrite",
+		"Validator" : "ScenarioJudgeValidator",
+		"Total" : 9,
+		"Passed" : 9,
+		"Failed" : 0,
+		"AverageScore" : 9.0
+	},
+	{
+		"Provider" : "github-models -> Meta",
+		"Model" : "llama-3.3-70b-instruct",
+		"Action" : "sms.generate",
+		"Validator" : "ScenarioJudgeValidator",
+		"Total" : 28,
+		"Passed" : 22,
+		"Failed" : 6,
+		"AverageScore" : 7.892857142857143
+	},
+	{
+		"Provider" : "github-models -> Meta",
+		"Model" : "llama-3.3-70b-instruct",
+		"Action" : "sms.shorten",
+		"Validator" : "ScenarioJudgeValidator",
+		"Total" : 2,
+		"Passed" : 2,
+		"Failed" : 0,
+		"AverageScore" : 9.0
+	},
+	{
+		"Provider" : "github-models -> Meta",
+		"Model" : "llama-3.3-70b-instruct",
+		"Action" : "sms.fixGrammar",
+		"Validator" : "ScenarioJudgeValidator",
+		"Total" : 3,
+		"Passed" : 3,
+		"Failed" : 0,
+		"AverageScore" : 9.333333333333334
+	},
+	{
+		"Provider" : "github-models",
+		"Model" : "llama-3.3-70b-instruct",
+		"Action" : "sms.shorten",
+		"Validator" : "ScenarioJudgeValidator",
+		"Total" : 1,
+		"Passed" : 1,
+		"Failed" : 0,
+		"AverageScore" : 9.0
+	},
+	{
+		"Provider" : "github-models -> Meta",
+		"Model" : "llama-3.3-70b-instruct",
+		"Action" : "sms.expand",
+		"Validator" : "ScenarioJudgeValidator",
+		"Total" : 3,
+		"Passed" : 3,
+		"Failed" : 0,
+		"AverageScore" : 9.0
+	},
+	{
+		"Provider" : "github-models -> Meta",
+		"Model" : "llama-3.3-70b-instruct",
+		"Action" : "sms.casualize",
+		"Validator" : "ScenarioJudgeValidator",
+		"Total" : 3,
+		"Passed" : 3,
+		"Failed" : 0,
+		"AverageScore" : 9.0
+	},
+	{
+		"Provider" : "github-models -> Meta",
+		"Model" : "llama-3.3-70b-instruct",
+		"Action" : "sms.formalize",
+		"Validator" : "ScenarioJudgeValidator",
+		"Total" : 3,
+		"Passed" : 2,
+		"Failed" : 1,
+		"AverageScore" : 7.666666666666667
+	}
+]}

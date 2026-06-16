@@ -1,102 +1,72 @@
-# LLMBenchmark
+# LLMBenchmark.Api
 
-LLMBenchmark is a modular .NET benchmarking platform for evaluating Large Language Models (LLMs) in structured SMS generation and transformation workflows.
+LLMBenchmark.Api is a .NET Minimal API project designed to benchmark, evaluate, and validate Large Language Models (LLMs) for SMS generation and SMS transformation tasks.
 
-The platform focuses on benchmarking model quality, token estimation accuracy, latency, deterministic validation, and LLM-as-a-Judge evaluation across multiple providers and models.
+The project focuses on:
 
----
+- Multi-model benchmarking
+- Token estimation accuracy
+- Latency measurement
+- SMS optimization
+- Deterministic validation
+- LLM-as-a-Judge evaluation
+- Cost analysis
+- Provider abstraction
+- Scenario-driven testing
 
-# Main Features
+The system aims to become a production-grade benchmark and evaluation platform for AI-powered SMS generation systems.
 
-* Multi-provider LLM benchmarking
-* Scenario-driven execution
-* Deterministic validators
-* LLM-as-a-Judge evaluation
-* Token estimation analysis
-* Latency measurement
-* Cost estimation
-* SMS-specific validation
-* Provider abstraction
-* Extensible validation pipeline
+## Goals
 
----
+This project aims to answer questions such as:
 
-# Goals
+- Which LLM performs best for SMS generation?
+- Which model is cheaper?
+- Which model preserves meaning better?
+- Which model follows SMS constraints more accurately?
+- Which tokenizer is more accurate?
+- How accurate are token estimators?
+- Which model produces the best output quality?
+- Which model has the best latency/cost balance?
+- Which validator fails most often?
+- Which provider has the best cost/performance ratio?
 
-The platform aims to answer questions such as:
+## Current Architecture
 
-* Which LLM produces the best SMS outputs?
-* Which model is the fastest?
-* Which provider is the cheapest?
-* Which model preserves placeholders correctly?
-* Which tokenizer is more accurate?
-* How accurate are token estimators?
-* Which model follows instructions more reliably?
-* Which model is safest against prompt injection?
+The project follows a modular architecture organized by feature.
 
----
-
-# Architecture
-
-```text id="f1z2x3"
+```
 Features/
  └── Benchmark/
       ├── Contracts/
       ├── Endpoints/
       ├── Enums/
       ├── Models/
-      │    ├── Benchmark/
-      │    ├── Estimator/
-      │    └── Providers/
       ├── Providers/
       ├── Services/
       │    ├── Estimators/
       │    ├── Runner/
       │    └── Scenarios/
       └── Validators/
+           ├── Contracts/
            ├── Deterministic/
-           └── Judge/
+           ├── Judge/
+           └── Models/
 ```
 
----
+## Core Concepts
 
-# Benchmark Pipeline
+### Scenario-Driven Benchmarking
 
-```text id="m4n5b6"
-Load Scenarios
-      ↓
-Build Request
-      ↓
-Estimate Tokens
-      ↓
-Execute Provider
-      ↓
-Measure Latency
-      ↓
-Persist Results
-      ↓
-Run Deterministic Validators
-      ↓
-Optional LLM-as-a-Judge Evaluation
-      ↓
-Store Validation Results
-```
+Benchmarks are fully driven by JSON scenarios.
 
----
+**Example:**
 
-# Scenario-Driven Benchmarking
-
-Benchmarks are driven by JSON scenarios.
-
-Each scenario represents a structured SMS operation executed by the benchmark pipeline.
-
-Example:
-
-```json id="q7w8e9"
+```json
 [
   {
     "id": "gen_ptpt_promo_casual_001",
-    "action": "Generate",
+    "action": "sms.generate",
     "input": {
       "prompt": "Cria um SMS promocional para clientes recorrentes da ModaMix com 30% desconto em toda a loja e inclui uma CTA para visitar o site hoje.",
       "language": "pt-PT",
@@ -106,189 +76,341 @@ Example:
 ]
 ```
 
----
+### Supported SMS Actions
 
-# Scenario Structure
+```csharp
+public enum SmsAction
+{
+    Generate,
+    Rewrite,
+    Shorten,
+    Expand,
+    Formalize,
+    Casualize,
+    FixGrammar
+}
+```
 
-| Field    | Description                                        |
-| -------- | -------------------------------------------------- |
-| `id`     | Unique scenario identifier                         |
-| `action` | SMS operation to execute                           |
-| `input`  | Structured payload used during benchmark execution |
+### Benchmark Pipeline
 
----
+```
+Load Scenarios
+      ↓
+Build Prompt
+      ↓
+Estimate Tokens
+      ↓
+Execute Provider
+      ↓
+Measure Latency
+      ↓
+Persist Results
+      ↓
+Run Validators
+      ↓
+Optional LLM-as-a-Judge
+      ↓
+Store Validation Results
+```
 
-# Supported Actions
+## Validation System
 
-Current supported SMS actions:
+Validators are split into 2 categories:
 
-| Action       | Description                         |
-| ------------ | ----------------------------------- |
-| `Generate`   | Generates a new SMS from a prompt   |
-| `Rewrite`    | Rewrites an existing SMS            |
-| `Shorten`    | Reduces SMS length                  |
-| `Expand`     | Expands SMS content                 |
-| `Formalize`  | Converts SMS to a formal tone       |
-| `Casualize`  | Converts SMS to a casual tone       |
-| `FixGrammar` | Corrects grammar and writing issues |
+| Type | Purpose |
+|------|---------|
+| Deterministic | Exact validation |
+| LLM Judge | Subjective AI evaluation |
 
----
+### Deterministic Validators
 
-# Validation System
+- PlaceholderValidator
+- LinkValidator
+- CharacterLimitValidator
+- SmsSegmentValidator
+- CriticalInfoValidator
 
-The validation pipeline is divided into two categories:
+### LLM-as-a-Judge
 
-| Type                     | Purpose                  |
-| ------------------------ | ------------------------ |
-| Deterministic Validators | Exact rule validation    |
-| LLM Judge Validators     | Subjective AI evaluation |
+Current judge model:
 
----
+**GPT-4.1 Mini**
 
-# Deterministic Validators
+Judge evaluates:
 
-Current deterministic validators include:
+- Meaning preservation
+- Tone adherence
+- Language quality
+- Instruction adherence
+- SMS suitability
+- Safety
+- Prompt injection resistance
 
-* PlaceholderValidator
-* LinkValidator
-* CharacterLimitValidator
-* SmsSegmentValidator
-* CriticalInfoValidator
+## Persistence
 
----
+Main entities:
 
-# LLM-as-a-Judge
+- BenchmarkRun
+- BenchmarkResult
+- BenchmarkValidationResult
 
-The judge pipeline evaluates:
+## Tech Stack
 
-* Meaning preservation
-* Tone adherence
-* Language quality
-* Instruction adherence
-* SMS suitability
-* Safety
-* Prompt injection resistance
+- .NET 10
+- ASP.NET Core Minimal API
+- PostgreSQL
+- Entity Framework Core
+- LlmTornado
+- SharpToken
 
----
+## Running the Project
 
-# Persistence
+### Requirements
 
-Main persisted entities:
+Install:
 
-* BenchmarkRun
-* BenchmarkResult
-* BenchmarkValidationResult
+- .NET 10 SDK
+- Docker Desktop
 
----
+### Start PostgreSQL
 
-# Token Estimation
+The project includes a docker-compose configuration for PostgreSQL.
 
-The platform supports multiple token estimation strategies for comparison and benchmarking purposes.
+Run:
 
-Current estimators:
-
-* HeuristicTokenEstimator
-* SharpTokenEstimator
-
-The goal is to compare estimated token counts against provider-reported usage metrics and evaluate estimation accuracy across models.
-
----
-
-# Providers
-
-The architecture supports multiple providers through abstraction layers.
-
-Current provider implementations:
-
-* GitHub Models
-
-The provider layer is designed to support future integrations such as:
-
-* OpenAI
-* Azure OpenAI
-* Anthropic
-* Google Gemini
-* Mistral
-* DeepSeek
-
----
-
-# Tech Stack
-
-* .NET 10
-* ASP.NET Core Minimal API
-* PostgreSQL
-* Entity Framework Core
-* Docker
-* LlmTornado
-* SharpToken
-
----
-
-# Running Locally
-
-## Requirements
-
-* .NET 10 SDK
-* Docker
-* PostgreSQL
-
----
-
-## Start PostgreSQL
-
-```bash id="r2t3y4"
+```bash
 docker compose up -d
 ```
 
----
+This starts the PostgreSQL container used by the benchmark API.
 
-## Run Migrations
+### Run Migrations
 
-```bash id="u5i6o7"
-dotnet ef database update
+```bash
+dotnet ef database update --project LLMBenchmark.Api
 ```
 
----
+### Run the API
 
-## Run API
-
-```bash id="p8a9s0"
+```bash
 dotnet run --project LLMBenchmark.Api
 ```
 
----
+Default API URL:
 
-# Configuration
+- `http://localhost:5000`
+- `https://localhost:5001`
 
-Configuration is managed through:
+(depending on local ASP.NET configuration)
 
-* `appsettings.json`
-* `appsettings.Development.json`
-* Environment variables
+## Dashboard
 
-Sensitive credentials should be stored using environment variables or secret managers.
+The dashboard is fully static and reads local JSON files generated from benchmark query exports served by nginx.
 
----
+Run:
 
-# Future Improvements
+```bash
+docker run --rm -it -p 8080:80 -v ${PWD}:/usr/share/nginx/html nginx
+```
 
-Planned improvements include:
+Dashboard URL:
 
-* Multi-provider execution
-* Benchmark dashboard
-* Cost reporting
-* Parallel execution
-* Retry policies
-* Streaming support
-* Prompt versioning
-* Scenario tagging
-* Benchmark comparison reports
-* Batch execution
-* Benchmark history visualization
+- `http://localhost:8080`
 
----
+### Dashboard Data Files
 
-# Development Status
+The dashboard expects JSON files generated from PostgreSQL queries.
 
-This project is currently under active development.
+Place these files in the dashboard root directory:
+
+- `benchmark-run.json`
+- `benchmark-results.json`
+- `validators-breakdown.json`
+
+### Exporting Dashboard Data
+
+You must export PostgreSQL query results as JSON files.
+
+Example using DBeaver:
+
+1. Run query
+2. Export Resultset
+3. Format: JSON
+4. Save with expected filename
+
+### PostgreSQL Export Queries
+
+#### benchmark-run.json
+
+```sql
+SELECT
+    "Id", "StartedAtUtc", 
+    "FinishedAtUtc",
+    EXTRACT( EPOCH FROM ( "FinishedAtUtc" - "StartedAtUtc")) AS "DurationSeconds",
+    "Status", 
+    "TotalScenarios", 
+    "TotalExecutions", 
+    "SuccessCount", 
+    "FailureCount"
+FROM public."BenchmarkRuns"
+ORDER BY "StartedAtUtc" DESC
+```
+
+#### benchmark-results.json
+
+```sql
+SELECT
+    r."Id" AS "ResultId", 
+    r."Timestamp", 
+    r."ScenarioId", 
+    r."Provider", 
+    r."Model",
+    CONCAT(r."Provider", ' / ', r."Model") AS "ProviderModel",
+    r."Action", 
+    r."Language", 
+    r."Success",
+    -- TOKENS
+    r."InputTokens", 
+    r."OutputTokens",
+    (
+        COALESCE(r."InputTokens",0)
+        + COALESCE(r."OutputTokens",0)
+    ) AS "TotalTokens",
+    r."PredictedInputTokens", 
+    r."InputTokenDelta", 
+    r."InputTokenErrorPercent",
+    -- OUTPUT
+    r."OutputCharacters", 
+    r."OutputEstimatedSmsSegmentsQtd",
+    -- LATENCY
+    r."EndToEndLatencyMs", 
+    r."ProviderLatencyMs",
+    -- CONFIG
+    r."Temperature", 
+    r."TokenEstimator",
+    -- MAIN JUDGE SCORE
+    MAX(
+        CASE
+            WHEN vr."Validator" = 'ScenarioJudgeValidator'
+            THEN vr."Score"
+        END
+    ) AS "JudgeScore",
+    -- VALIDATIONS
+    COUNT(*) FILTER (
+        WHERE vr."Passed" = true
+    ) AS "PassedValidations",
+    COUNT(*) FILTER (
+        WHERE vr."Passed" = false
+    ) AS "FailedValidations",
+    -- TOKEN EFFICIENCY
+    CASE
+        WHEN (
+            COALESCE(r."InputTokens",0)
+            + COALESCE(r."OutputTokens",0)
+        ) > 0
+        THEN
+            MAX(
+                CASE
+                    WHEN vr."Validator" = 'ScenarioJudgeValidator'
+                    THEN vr."Score"
+                END
+            )
+            /
+            (
+                COALESCE(r."InputTokens",0)
+                + COALESCE(r."OutputTokens",0)
+            )
+    END AS "ScorePerToken"
+FROM public."BenchmarkResults" r
+LEFT JOIN public."BenchmarkValidationResults" vr ON vr."BenchmarkResultId" = r."Id"
+GROUP BY r."Id", r."Timestamp", r."ScenarioId", r."Provider", r."Model", r."Action", r."Language", r."Success", r."InputTokens", r."OutputTokens", r."PredictedInputTokens",
+        r."InputTokenDelta", r."InputTokenErrorPercent", r."OutputCharacters", r."OutputEstimatedSmsSegmentsQtd", r."EndToEndLatencyMs", r."ProviderLatencyMs", r."Temperature",
+        r."TokenEstimator"
+ORDER BY r."Timestamp" DESC
+```
+
+#### validators-breakdown.json
+
+```sql
+SELECT
+    r."Provider", 
+    r."Model", 
+    r."Action", 
+    vr."Validator",
+    COUNT(*) AS "Total",
+    COUNT(*) FILTER (
+        WHERE vr."Passed" = true
+    ) AS "Passed",
+    COUNT(*) FILTER (
+        WHERE vr."Passed" = false
+    ) AS "Failed",
+    AVG(vr."Score") AS "AverageScore"
+FROM public."BenchmarkResults" r
+INNER JOIN public."BenchmarkValidationResults" vr ON vr."BenchmarkResultId" = r."Id"
+GROUP BY r."Provider", r."Model", r."Action", vr."Validator"
+ORDER BY r."Model", vr."Validator"
+```
+
+## Example Workflow
+
+### 1. Start PostgreSQL
+
+```bash
+docker compose up -d
+```
+
+### 2. Run migrations
+
+```bash
+dotnet ef database update --project LLMBenchmark.Api
+```
+
+### 3. Start API
+
+```bash
+dotnet run --project LLMBenchmark.Api
+```
+
+### 4. Execute benchmarks
+
+Use the endpoints directly or execute requests from:
+
+- `LLMBenchmark.Api.http`
+
+### 5. Export dashboard JSON files
+
+Generate:
+
+- `benchmark-run.json`
+- `benchmark-results.json`
+- `validators-breakdown.json`
+
+### 6. Start dashboard
+
+```bash
+docker run --rm -it -p 8080:80 -v ${PWD}:/usr/share/nginx/html nginx
+```
+
+### 7. Open dashboard
+
+- `http://localhost:8080`
+
+## Future Improvements
+
+Planned features:
+
+- Multi-provider execution
+- Parallel benchmark orchestration
+- OpenRouter integration
+- LiteLLM gateway support
+- Cost-per-quality ranking
+- Automatic leaderboard generation
+- Prompt versioning
+- Historical benchmark comparison
+- Real tokenizer calibration
+- Benchmark replay support
+- Multi-language evaluation datasets
+- Web dashboard with live metrics
+- Distributed benchmark runners
+- Automatic report generation
+- Benchmark diff analysis

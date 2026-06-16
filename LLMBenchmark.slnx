@@ -1,5 +1,11 @@
 <Solution>
   <Folder Name="/Solution Items/">
+    <File Path="dashboard/app.js" />
+    <File Path="dashboard/benchmark-results.json" />
+    <File Path="dashboard/benchmark-runs.json" />
+    <File Path="dashboard/index.html" />
+    <File Path="dashboard/styles.css" />
+    <File Path="dashboard/validators-breakdown.json" />
     <File Path="README.md" />
   </Folder>
   <Project Path="LLMBenchmark.Api/LLMBenchmark.Api.csproj" />

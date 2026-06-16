@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>LLM Benchmark Dashboard</title>
+
+    <link rel="stylesheet" href="styles.css" />
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+<div class="container">
+
+    <header class="header">
+        <div>
+            <h1>LLM Benchmark Dashboard</h1>
+            <p>SMS Benchmark · Quality · Latency · Token Efficiency</p>
+        </div>
+
+        <div class="run-info">
+            <span id="runStatus">Loading...</span>
+        </div>
+    </header>
+
+    <section class="cards">
+
+        <div class="card">
+            <h3>🏆 Best Model</h3>
+            <div class="value" id="bestModel">-</div>
+            <div class="sub" id="bestModelScore">-</div>
+        </div>
+
+        <div class="card">
+            <h3>⚡ Lowest Latency</h3>
+            <div class="value" id="fastestModel">-</div>
+            <div class="sub" id="fastestLatency">-</div>
+        </div>
+
+        <div class="card">
+            <h3>🧠 Best Score / Token</h3>
+            <div class="value" id="efficientModel">-</div>
+            <div class="sub" id="efficientScore">-</div>
+        </div>
+
+        <div class="card">
+            <h3>📦 Total Tokens</h3>
+            <div class="value" id="totalTokens">-</div>
+            <div class="sub">processed</div>
+        </div>
+
+    </section>
+
+    <section class="charts-grid">
+
+        <div class="chart-card">
+            <h2>Average Judge Score by Model</h2>
+            <canvas id="scoreChart"></canvas>
+        </div>
+
+        <div class="chart-card">
+            <h2>Average Tokens by Model</h2>
+            <canvas id="tokensChart"></canvas>
+        </div>
+
+        <div class="chart-card">
+            <h2>Average Latency by Model</h2>
+            <canvas id="latencyChart"></canvas>
+        </div>
+
+        <div class="chart-card">
+            <h2>Score Per Token</h2>
+            <canvas id="efficiencyChart"></canvas>
+        </div>
+
+        <div class="chart-card full">
+            <h2>Validator Pass Rate</h2>
+            <canvas id="validatorChart"></canvas>
+        </div>
+
+    </section>
+
+    <section class="insights">
+        <h2>Insights</h2>
+
+        <div id="insightsList"></div>
+    </section>
+
+    <section class="table-section">
+
+        <h2>Execution Results</h2>
+
+        <table id="resultsTable">
+            <thead>
+            <tr>
+                <th>Model</th>
+                <th>Action</th>
+                <th>Score</th>
+                <th>Tokens</th>
+                <th>Latency</th>
+                <th>Segments</th>
+                <th>Success</th>
+            </tr>
+            </thead>
+
+            <tbody></tbody>
+        </table>
+
+    </section>
+
+</div>
+
+<script src="app.js"></script>
+
+</body>
+</html>
