@@ -1,87 +1,68 @@
-# LLMBenchmark.Api
+# LLMBenchmark
 
-LLMBenchmark.Api is a .NET Minimal API project designed to benchmark, evaluate, and validate Large Language Models (LLMs) for SMS generation and SMS transformation tasks.
+LLMBenchmark is a modular .NET benchmarking platform for evaluating Large Language Models (LLMs) in structured SMS generation and transformation workflows.
 
-The project focuses on:
+The platform focuses on benchmarking model quality, token estimation accuracy, latency, deterministic validation, and LLM-as-a-Judge evaluation across multiple providers and models.
 
-- Multi-model benchmarking
-- Token estimation accuracy
-- Latency measurement
-- SMS optimization
-- Deterministic validation
-- LLM-as-a-Judge evaluation
-- Cost analysis
-- Provider abstraction
-- Scenario-driven testing
+---
 
-The system is being built as a production-grade benchmark and evaluation platform for AI-powered SMS generation systems.
+# Main Features
+
+* Multi-provider LLM benchmarking
+* Scenario-driven execution
+* Deterministic validators
+* LLM-as-a-Judge evaluation
+* Token estimation analysis
+* Latency measurement
+* Cost estimation
+* SMS-specific validation
+* Provider abstraction
+* Extensible validation pipeline
 
 ---
 
 # Goals
 
-This project aims to answer questions such as:
+The platform aims to answer questions such as:
 
-- Which LLM performs best for generation?
-- Which model is cheaper?
-- Which model preserves placeholders correctly?
-- Which model follows constraints better?
-- Which tokenizer is more accurate?
-- How accurate are token estimators?
-- Which model produces the best output?
-- Which model preserves meaning better?
-- Which model is safest against prompt injection?
+* Which LLM produces the best SMS outputs?
+* Which model is the fastest?
+* Which provider is the cheapest?
+* Which model preserves placeholders correctly?
+* Which tokenizer is more accurate?
+* How accurate are token estimators?
+* Which model follows instructions more reliably?
+* Which model is safest against prompt injection?
 
 ---
 
-# Current Architecture
+# Architecture
 
-The project follows a modular architecture organized by feature.
-
-```text
+```text id="f1z2x3"
 Features/
  └── Benchmark/
       ├── Contracts/
       ├── Endpoints/
       ├── Enums/
-      ├── Estimators/
       ├── Models/
+      │    ├── Benchmark/
+      │    ├── Estimator/
+      │    └── Providers/
       ├── Providers/
       ├── Services/
+      │    ├── Estimators/
+      │    ├── Runner/
+      │    └── Scenarios/
       └── Validators/
-```
-
----
-
-# Core Concepts
-
-## Scenario-Driven Benchmarking
-
-Benchmarks are driven by JSON scenarios.
-
-Example:
-
-```json
-{
-  "id": "gen_ptpt_promo_casual_001",
-  "category": "generation",
-  "language": "PT-PT",
-  "tone": "casual",
-  "max_characters": 160,
-  "expected_sms_segments": 1,
-  "requirements": [
-    "Must be concise",
-    "Must include CTA"
-  ],
-  "prompt": "ModaMix: 30% desconto em toda a loja para clientes recorrentes. Visita o site hoje."
-}
+           ├── Deterministic/
+           └── Judge/
 ```
 
 ---
 
 # Benchmark Pipeline
 
-```text
+```text id="m4n5b6"
 Load Scenarios
       ↓
 Build Request
@@ -94,69 +75,220 @@ Measure Latency
       ↓
 Persist Results
       ↓
-Run Validators
+Run Deterministic Validators
       ↓
-Optional LLM-as-a-Judge
+Optional LLM-as-a-Judge Evaluation
       ↓
 Store Validation Results
 ```
 
 ---
 
+# Scenario-Driven Benchmarking
+
+Benchmarks are driven by JSON scenarios.
+
+Each scenario represents a structured SMS operation executed by the benchmark pipeline.
+
+Example:
+
+```json id="q7w8e9"
+[
+  {
+    "id": "gen_ptpt_promo_casual_001",
+    "action": "Generate",
+    "input": {
+      "prompt": "Cria um SMS promocional para clientes recorrentes da ModaMix com 30% desconto em toda a loja e inclui uma CTA para visitar o site hoje.",
+      "language": "pt-PT",
+      "tone": "casual"
+    }
+  }
+]
+```
+
+---
+
+# Scenario Structure
+
+| Field    | Description                                        |
+| -------- | -------------------------------------------------- |
+| `id`     | Unique scenario identifier                         |
+| `action` | SMS operation to execute                           |
+| `input`  | Structured payload used during benchmark execution |
+
+---
+
+# Supported Actions
+
+Current supported SMS actions:
+
+| Action       | Description                         |
+| ------------ | ----------------------------------- |
+| `Generate`   | Generates a new SMS from a prompt   |
+| `Rewrite`    | Rewrites an existing SMS            |
+| `Shorten`    | Reduces SMS length                  |
+| `Expand`     | Expands SMS content                 |
+| `Formalize`  | Converts SMS to a formal tone       |
+| `Casualize`  | Converts SMS to a casual tone       |
+| `FixGrammar` | Corrects grammar and writing issues |
+
+---
+
 # Validation System
 
-Validators are split into 2 categories:
+The validation pipeline is divided into two categories:
 
-| Type | Purpose |
-|---|---|
-| Deterministic | Exact validation |
-| LLM Judge | Subjective AI evaluation |
+| Type                     | Purpose                  |
+| ------------------------ | ------------------------ |
+| Deterministic Validators | Exact rule validation    |
+| LLM Judge Validators     | Subjective AI evaluation |
 
 ---
 
 # Deterministic Validators
 
-- PlaceholderValidator
-- LinkValidator
-- CharacterLimitValidator
-- SmsSegmentValidator
-- CriticalInfoValidator
+Current deterministic validators include:
+
+* PlaceholderValidator
+* LinkValidator
+* CharacterLimitValidator
+* SmsSegmentValidator
+* CriticalInfoValidator
 
 ---
 
 # LLM-as-a-Judge
 
-Current judge model:
+The judge pipeline evaluates:
 
-- GPT-4.1 Mini
-
-Judge evaluates:
-
-- Meaning preservation
-- Tone adherence
-- Language quality
-- Instruction adherence
-- SMS suitability
-- Safety
-- InjectionValidator
+* Meaning preservation
+* Tone adherence
+* Language quality
+* Instruction adherence
+* SMS suitability
+* Safety
+* Prompt injection resistance
 
 ---
 
 # Persistence
 
-Main entities:
+Main persisted entities:
 
-- BenchmarkRun
-- BenchmarkResult
-- BenchmarkValidationResult
+* BenchmarkRun
+* BenchmarkResult
+* BenchmarkValidationResult
+
+---
+
+# Token Estimation
+
+The platform supports multiple token estimation strategies for comparison and benchmarking purposes.
+
+Current estimators:
+
+* HeuristicTokenEstimator
+* SharpTokenEstimator
+
+The goal is to compare estimated token counts against provider-reported usage metrics and evaluate estimation accuracy across models.
+
+---
+
+# Providers
+
+The architecture supports multiple providers through abstraction layers.
+
+Current provider implementations:
+
+* GitHub Models
+
+The provider layer is designed to support future integrations such as:
+
+* OpenAI
+* Azure OpenAI
+* Anthropic
+* Google Gemini
+* Mistral
+* DeepSeek
 
 ---
 
 # Tech Stack
 
-- .NET 10
-- ASP.NET Core Minimal API
-- PostgreSQL
-- Entity Framework Core
-- LlmTornado
-- SharpToken
+* .NET 10
+* ASP.NET Core Minimal API
+* PostgreSQL
+* Entity Framework Core
+* Docker
+* LlmTornado
+* SharpToken
+
+---
+
+# Running Locally
+
+## Requirements
+
+* .NET 10 SDK
+* Docker
+* PostgreSQL
+
+---
+
+## Start PostgreSQL
+
+```bash id="r2t3y4"
+docker compose up -d
+```
+
+---
+
+## Run Migrations
+
+```bash id="u5i6o7"
+dotnet ef database update
+```
+
+---
+
+## Run API
+
+```bash id="p8a9s0"
+dotnet run --project LLMBenchmark.Api
+```
+
+---
+
+# Configuration
+
+Configuration is managed through:
+
+* `appsettings.json`
+* `appsettings.Development.json`
+* Environment variables
+
+Sensitive credentials should be stored using environment variables or secret managers.
+
+---
+
+# Future Improvements
+
+Planned improvements include:
+
+* Multi-provider execution
+* Benchmark dashboard
+* Cost reporting
+* Parallel execution
+* Retry policies
+* Streaming support
+* Prompt versioning
+* Scenario tagging
+* Benchmark comparison reports
+* Batch execution
+* Benchmark history visualization
+
+---
+
+# Development Status
+
+This project is currently under active development.
