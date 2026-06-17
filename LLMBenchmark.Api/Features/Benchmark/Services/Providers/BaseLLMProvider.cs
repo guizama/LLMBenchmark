@@ -247,8 +247,7 @@ public abstract partial class BaseLLMProvider : ILLMProvider
             """;
     }
 
-    private static double MapCreativityToTemperature(
-    SmsCreativity creativity)
+    private static double MapCreativityToTemperature(SmsCreativity creativity)
     {
         return creativity switch
         {
@@ -262,8 +261,7 @@ public abstract partial class BaseLLMProvider : ILLMProvider
         };
     }
 
-    private static TokenizerType ResolveTokenizer(
-    string? tokenizer)
+    private static TokenizerType ResolveTokenizer(string? tokenizer)
     {
         if (Enum.TryParse<TokenizerType>(tokenizer, ignoreCase: true, out var parsed))
         {

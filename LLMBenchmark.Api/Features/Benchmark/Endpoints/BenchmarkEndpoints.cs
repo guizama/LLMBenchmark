@@ -19,6 +19,20 @@ public static class BenchmarkEndpoints
                 return Results.Ok(scenarios);
             });
 
+        app.MapGet("/test-anthropic", async (IEnumerable<ILLMProvider> providers) =>
+        {
+            var provider = providers.First(x => x.ProviderName == "anthropic");
+
+            return await provider.ExecuteAsync(new LLMRequest
+            {
+                UserText = "Cria um SMS curto de promoção.",
+                Action = SmsAction.Generate,
+                Tone = SmsTone.Neutral,
+                Language = SmsLanguage.PtPT,
+                Creativity = SmsCreativity.Low
+            });
+        });
+
         app.MapGet("/test-openai", async (IEnumerable<ILLMProvider> providers) =>
         {
             var provider = providers.First(x => x.ProviderName == "openai");

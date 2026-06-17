@@ -31,6 +31,7 @@ builder.Host.UseSerilog((ctx, lc) =>
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddHttpClient();
 
 builder.Services.AddDbContext<AppDbContext>(options =>
 {
@@ -42,12 +43,13 @@ builder.Services.AddScoped<ScenarioLoader>();
 
 builder.Services.Configure<LLMProviderOptions>("GitHubModels", builder.Configuration.GetSection("Providers:GitHubModels"));
 builder.Services.Configure<LLMProviderOptions>("OpenAI", builder.Configuration.GetSection("Providers:OpenAI"));
-
+builder.Services.Configure<LLMProviderOptions>("Anthropic", builder.Configuration.GetSection("Providers:Anthropic"));
 
 builder.Services.AddSingleton(new TornadoApi(
 [
     new ProviderAuthentication(LLmProviders.OpenAi, builder.Configuration["Providers:OpenAI:ApiKey"]!),
-    new ProviderAuthentication(LLmProviders.Custom, builder.Configuration["Providers:GitHubModels:ApiKey"]!)
+    new ProviderAuthentication(LLmProviders.Custom, builder.Configuration["Providers:GitHubModels:ApiKey"]!),
+    new ProviderAuthentication(LLmProviders.Anthropic, builder.Configuration["Providers:Anthropic:ApiKey"]!)
 ]));
 
 
@@ -64,10 +66,11 @@ builder.Services.AddSwaggerGen(options =>
 
 builder.Services.AddScoped<ILLMProvider, GitHubModelsProvider>();
 builder.Services.AddScoped<ILLMProvider, OpenAIProvider>();
+builder.Services.AddScoped<ILLMProvider, AnthropicProvider>();
 
 builder.Services.AddScoped<HeuristicTokenEstimator>();
 builder.Services.AddScoped<SharpTokenEstimator>();
-
+builder.Services.AddScoped<AnthropicApiTokenEstimator>();
 builder.Services.AddScoped<ITokenEstimatorFactory, TokenEstimatorFactory>();
 
 builder.Services.AddScoped<IBenchmarkValidator, PlaceholderValidator>();

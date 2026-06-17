@@ -6,5 +6,6 @@ namespace LLMBenchmark.Api.Features.Benchmark.Enums;
 public enum BenchmarkProvider
 {
     GitHubModels = 1,
-    OpenAI = 2
+    OpenAI = 2,
+    Anthropic = 3,
 }

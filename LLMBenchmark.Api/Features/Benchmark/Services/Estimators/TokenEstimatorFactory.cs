@@ -5,10 +5,12 @@ namespace LLMBenchmark.Api.Features.Benchmark.Services.Estimators;
 
 public sealed class TokenEstimatorFactory(
     SharpTokenEstimator sharpTokenEstimator,
-    HeuristicTokenEstimator heuristicTokenEstimator) : ITokenEstimatorFactory
+    HeuristicTokenEstimator heuristicTokenEstimator,
+    AnthropicApiTokenEstimator anthropicApiTokenEstimator) : ITokenEstimatorFactory
 {
     private readonly SharpTokenEstimator _sharpTokenEstimator = sharpTokenEstimator;
     private readonly HeuristicTokenEstimator _heuristicTokenEstimator = heuristicTokenEstimator;
+    private readonly AnthropicApiTokenEstimator _anthropicApiTokenEstimator = anthropicApiTokenEstimator;
 
     public ITokenEstimator Create(TokenizerType tokenizer)
     {
@@ -23,7 +25,7 @@ public sealed class TokenEstimatorFactory(
             TokenizerType.P50KEdit => _sharpTokenEstimator,
             TokenizerType.R50KBase => _sharpTokenEstimator,
             //Anthropic
-            TokenizerType.Claude => _sharpTokenEstimator,
+            TokenizerType.Claude => _anthropicApiTokenEstimator,
 
             _ => _heuristicTokenEstimator
         };
