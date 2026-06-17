@@ -16,21 +16,6 @@ The project focuses on:
 
 The system aims to become a production-grade benchmark and evaluation platform for AI-powered SMS generation systems.
 
-## Goals
-
-This project aims to answer questions such as:
-
-- Which LLM performs best for SMS generation?
-- Which model is cheaper?
-- Which model preserves meaning better?
-- Which model follows SMS constraints more accurately?
-- Which tokenizer is more accurate?
-- How accurate are token estimators?
-- Which model produces the best output quality?
-- Which model has the best latency/cost balance?
-- Which validator fails most often?
-- Which provider has the best cost/performance ratio?
-
 ## Current Architecture
 
 The project follows a modular architecture organized by feature.
@@ -113,6 +98,29 @@ Optional LLM-as-a-Judge
 Store Validation Results
 ```
 
+### Token Estimation Calibration
+
+The benchmark supports multiple token estimation strategies.
+
+Before executing a scenario, token counts can be estimated using local tokenizers.
+
+After execution, provider-reported token usage can be collected and compared against the prediction.
+
+Supported approaches:
+
+- SharpToken
+- Heuristic estimator
+- Anthropic Count Tokens API
+
+Metrics collected:
+
+- PredictedInputTokens
+- InputTokens
+- InputTokenDelta
+- InputTokenErrorPercent
+
+This allows measuring token estimation accuracy across providers and models.
+
 ## Validation System
 
 Validators are split into 2 categories:
@@ -162,6 +170,92 @@ Main entities:
 - Entity Framework Core
 - LlmTornado
 - SharpToken
+- Anthropic Count Tokens API
+
+## Supported Providers
+
+Currently supported providers:
+
+| Provider | Status | Token Counting |
+|-----------|---------|----------------|
+| OpenAI | ✅ | SharpToken |
+| Anthropic | ✅ | Anthropic Count Tokens API |
+| GitHub Models | ✅ | Provider reported usage |
+
+### OpenAI
+
+Supported features:
+
+- Chat Completions API
+- Token estimation using SharpToken
+
+Metrics collected:
+
+- PredictedInputTokens
+- InputTokens
+- OutputTokens
+- InputTokenDelta
+- InputTokenErrorPercent
+
+
+### Anthropic
+
+Supported features:
+
+- Chat Completions API
+- Count Tokens API
+
+The Count Tokens API is used to compare estimated token counts against the official Anthropic tokenizer.
+
+This allows measuring:
+
+- Prediction accuracy
+- Token estimation error
+- Cost prediction accuracy
+
+### GitHub Models
+
+Supported features:
+
+- Model execution through GitHub Models
+- Multi-model benchmarking
+- Provider usage reporting
+
+## Configuration
+
+The application requires provider credentials.
+
+Example configuration:
+
+```json
+{
+  "GitHubModels": {
+    "Token": "<github-token>"
+  },
+  "OpenAI": {
+    "ApiKey": "<openai-api-key>"
+  },
+  "Anthropic": {
+    "ApiKey": "<anthropic-api-key>"
+  }
+}
+```
+
+### Environment Variables
+
+For production environments, secrets should be provided through environment variables instead of appsettings.json.
+
+Examples:
+
+```bash
+GitHubModels__Token=xxx
+
+OpenAI__ApiKey=xxx
+
+Anthropic__ApiKey=xxx
+```
+
+This prevents provider credentials from being committed to source control.
 
 ## Running the Project
 
@@ -399,18 +493,8 @@ docker run --rm -it -p 8080:80 -v ${PWD}:/usr/share/nginx/html nginx
 
 Planned features:
 
-- Multi-provider execution
 - Parallel benchmark orchestration
-- OpenRouter integration
 - LiteLLM gateway support
 - Cost-per-quality ranking
-- Automatic leaderboard generation
 - Prompt versioning
 - Historical benchmark comparison
-- Real tokenizer calibration
-- Benchmark replay support
-- Multi-language evaluation datasets
-- Web dashboard with live metrics
-- Distributed benchmark runners
-- Automatic report generation
-- Benchmark diff analysis
