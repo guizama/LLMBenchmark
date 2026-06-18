@@ -51,17 +51,13 @@ public abstract partial class BaseLLMProvider : ILLMProvider
                 });
 
                 GetPrompts(request, out string systemPrompt, out string systemPromptRequestSettings, out string systemPromptInputMetadata);
-
-                conversation.AppendSystemMessage(systemPrompt);
-                conversation.AppendSystemMessage(systemPromptRequestSettings);
-                conversation.AppendSystemMessage(systemPromptInputMetadata);
-
                 var allSystemPrompts = systemPrompt + "\n" + systemPromptRequestSettings + "\n" + systemPromptInputMetadata;
 
                 var tokenizerType = ResolveTokenizer(modelConfig.Tokenizer);
                 var estimator = TokenEstimatorFactory.Create(tokenizerType);
                 var estimate = await estimator.EstimateInputTokensAsync(modelConfig.Model, allSystemPrompts, request.UserText, tokenizerType);
 
+                conversation.AppendSystemMessage(allSystemPrompts);
                 conversation.AppendUserInput(request.UserText);
 
                 var response = await conversation.GetResponseRich(cts.Token);

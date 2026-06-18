@@ -4,6 +4,7 @@
     <File Path="dashboard/benchmark-results.json" />
     <File Path="dashboard/benchmark-runs.json" />
     <File Path="dashboard/index.html" />
+    <File Path="dashboard/model_metrics.json" />
     <File Path="dashboard/styles.css" />
     <File Path="dashboard/validators-breakdown.json" />
     <File Path="README.md" />

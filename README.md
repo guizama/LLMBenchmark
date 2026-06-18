@@ -445,6 +445,40 @@ GROUP BY r."Provider", r."Model", r."Action", vr."Validator"
 ORDER BY r."Model", vr."Validator"
 ```
 
+#### model_metrics.json
+
+```sql
+SELECT
+    br."Model",
+    COUNT(*) AS execution_count,
+    AVG(
+        COALESCE(br."InputTokens", 0)
+        +
+        COALESCE(br."OutputTokens", 0)
+    ) AS benchmark_avg_tokens,
+    AVG(
+        COALESCE(bvr."JudgeInputTokens", 0)
+        +
+        COALESCE(bvr."JudgeOutputTokens", 0)
+    ) AS judge_avg_tokens,
+    SUM(
+        COALESCE(br."InputTokens", 0)
+        +
+        COALESCE(br."OutputTokens", 0)
+    ) AS benchmark_total_tokens,
+    SUM(
+        COALESCE(bvr."JudgeInputTokens", 0)
+        +
+        COALESCE(bvr."JudgeOutputTokens", 0)
+    ) AS judge_total_tokens,
+    AVG(bvr."Score") AS avg_score,
+    AVG(br."EndToEndLatencyMs") AS avg_latency_ms
+FROM "BenchmarkResults" br
+LEFT JOIN "BenchmarkValidationResults" bvr ON bvr."BenchmarkResultId" = br."Id"
+GROUP BY br."Model"
+ORDER BY avg_score DESC;
+```
+
 ## Example Workflow
 
 ### 1. Start PostgreSQL

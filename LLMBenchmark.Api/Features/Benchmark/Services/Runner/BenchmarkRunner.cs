@@ -181,6 +181,7 @@ public sealed class BenchmarkRunner(
                 }
             }
 
+            run.Status = "Completed";
             await _dbContext.SaveChangesAsync(CancellationToken.None);
         }
         catch (OperationCanceledException ex)
@@ -196,9 +197,6 @@ public sealed class BenchmarkRunner(
         finally
         {
             run.FinishedAtUtc = DateTime.UtcNow;
-            if (string.IsNullOrWhiteSpace(run.Status))
-                run.Status = "Completed";
-
             await _dbContext.SaveChangesAsync(CancellationToken.None);
         }
 

@@ -15,7 +15,7 @@ public sealed class AnthropicApiTokenEstimator(IHttpClientFactory httpClientFact
     private readonly string _apiKey = options.Get("Anthropic").ApiKey ?? throw new InvalidOperationException("Anthropic ApiKey not configured.");
 
     public async Task<TokenEstimateResult> EstimateInputTokensAsync(string model, string systemPrompt, string userPrompt, TokenizerType tokenizer)
-    {
+        {
         using var client = _httpClientFactory.CreateClient();
         client.DefaultRequestHeaders.Add("x-api-key", _apiKey);
         client.DefaultRequestHeaders.Add("anthropic-version", "2023-06-01");
