@@ -26,7 +26,7 @@ public static class BenchmarkEndpoints
             return await provider.ExecuteAsync(new LLMRequest
             {
                 UserText = "Cria um SMS curto de promoção.",
-                Action = SmsAction.Generate,
+                Action = [SmsAction.Generate],
                 Tone = SmsTone.Neutral,
                 Language = SmsLanguage.PtPT,
                 Creativity = SmsCreativity.Low
@@ -40,7 +40,7 @@ public static class BenchmarkEndpoints
             return await provider.ExecuteAsync(new LLMRequest
             {
                 UserText = "Cria um SMS curto de promoção.",
-                Action = SmsAction.Generate,
+                Action = [SmsAction.Generate],
                 Tone = SmsTone.Neutral,
                 Language = SmsLanguage.PtPT,
                 Creativity = SmsCreativity.Low
@@ -54,7 +54,7 @@ public static class BenchmarkEndpoints
             return await provider.ExecuteAsync(new LLMRequest
             {
                 UserText = "Cria um SMS curto de promoção.",
-                Action = SmsAction.Generate,
+                Action = [SmsAction.Generate],
                 Tone = SmsTone.Neutral,
                 Language = SmsLanguage.PtPT,
                 Creativity = SmsCreativity.Low

@@ -171,94 +171,102 @@ public sealed class LLMJudgeService : ILLMJudgeService
             sb.AppendLine("- Penalize PT-BR mixed into PT-PT.");
         }
 
-        sb.AppendLine($"Action: {scenario.Action}");
+        sb.AppendLine($"Action: {(scenario.Action != null ? string.Join(",", scenario.Action) : "")}");
         sb.AppendLine($"Language: {scenario.Input.Language}");
         sb.AppendLine($"Tone: {scenario.Input.Tone}");
 
-        switch (scenario.Action)
+        var actionList = scenario.Action ?? new List<string>();
+
+        if (actionList.Contains("sms.generate"))
         {
-            case "sms.generate":
-                sb.AppendLine("""
-                    Action semantics:
-                    - The model must generate a NEW SMS based on the user prompt.
-                    - Creativity is allowed as long as the SMS remains safe and relevant.
-                    """);
-                break;
+            sb.AppendLine("""
+                Action semantics:
+                - The model must generate a NEW SMS based on the user prompt.
+                - Creativity is allowed as long as the SMS remains safe and relevant.
+                """);
+        }
 
-            case "sms.expand":
-                sb.AppendLine("""
-                    Action semantics:
-                    - The model must EXPAND the original SMS.
-                    - The expanded output may be longer than the original.
-                    - Additional natural wording is allowed.
-                    - Additional promotional phrasing is allowed.
-                    - The original meaning and intent must remain preserved.
-                    - Do NOT penalize the model for increasing message size.
-                    - Do NOT penalize the model for adding natural supporting details.
-                    - Penalize ONLY if the expansion changes meaning or invents critical facts.
-                    """);
-                break;
-            case "sms.shorten":
-                sb.AppendLine("""
-                    Action semantics:
-                    - The model must SHORTEN the original SMS.
-                    - Brevity is extremely important.
-                    - Minor wording loss is acceptable if meaning remains intact.
-                    - Penalize unnecessary verbosity.
-                    """);
-                break;
+        if (actionList.Contains("sms.expand"))
+        {
+            sb.AppendLine("""
+                Action semantics:
+                - The model must EXPAND the original SMS.
+                - The expanded output may be longer than the original.
+                - Additional natural wording is allowed.
+                - Additional promotional phrasing is allowed.
+                - The original meaning and intent must remain preserved.
+                - Do NOT penalize the model for increasing message size.
+                - Do NOT penalize the model for adding natural supporting details.
+                - Penalize ONLY if the expansion changes meaning or invents critical facts.
+                """);
+        }
 
-            case "sms.formalize":
-                sb.AppendLine("""
-                    Action semantics:
-                    - The model must make the SMS more formal.
-                    - The meaning must remain the same.
-                    - Tone transformation is the primary objective.
-                    """);
-                break;
+        if (actionList.Contains("sms.shorten"))
+        {
+            sb.AppendLine("""
+                Action semantics:
+                - The model must SHORTEN the original SMS.
+                - Brevity is extremely important.
+                - Minor wording loss is acceptable if meaning remains intact.
+                - Penalize unnecessary verbosity.
+                """);
+        }
 
-            case "sms.casualize":
-                sb.AppendLine("""
-                    Action semantics:
-                    - The model must make the SMS more casual and conversational.
-                    - Informal wording is encouraged.
-                    - The original meaning must remain preserved.
-                    """);
-                break;
+        if (actionList.Contains("sms.formalize"))
+        {
+            sb.AppendLine("""
+                Action semantics:
+                - The model must make the SMS more formal.
+                - The meaning must remain the same.
+                - Tone transformation is the primary objective.
+                """);
+        }
 
-            case "sms.rewrite":
-                sb.AppendLine("""
-                    Action semantics:
-                    - The model must REWRITE the SMS.
-                    - The rewritten output must preserve the original meaning and intent.
-                    - Wording changes are encouraged.
-                    - Minor stylistic improvements are encouraged.
-                    - The rewritten SMS should sound natural and fluent.
-                    - Do NOT penalize harmless wording improvements.
-                    - Penalize meaning drift or invented information.
-                    """);
-                break;
+        if (actionList.Contains("sms.casualize"))
+        {
+            sb.AppendLine("""
+                Action semantics:
+                - The model must make the SMS more casual and conversational.
+                - Informal wording is encouraged.
+                - The original meaning must remain preserved.
+                """);
+        }
 
-            case "sms.fixgrammar":
-                sb.AppendLine("""
-                    Action semantics:
-                    - The model must correct grammar and spelling mistakes.
-                    - The meaning must remain identical.
-                    - Tone changes should be minimal.
-                    - Structural rewrites should be minimal.
-                    - Penalize unnecessary rewording.
-                    """);
-                break;
+        if (actionList.Contains("sms.rewrite"))
+        {
+            sb.AppendLine("""
+                Action semantics:
+                - The model must REWRITE the SMS.
+                - The rewritten output must preserve the original meaning and intent.
+                - Wording changes are encouraged.
+                - Minor stylistic improvements are encouraged.
+                - The rewritten SMS should sound natural and fluent.
+                - Do NOT penalize harmless wording improvements.
+                - Penalize meaning drift or invented information.
+                """);
+        }
 
-            default:
-                sb.AppendLine("""
-                    Action semantics:
-                    - The model must TRANSFORM the existing input text.
-                    - The output must preserve the original meaning.
-                    - The output must not invent unrelated content.
-                    - The output must remain semantically connected to the original text.
-                    """);
-                break;
+        if (actionList.Contains("sms.fixgrammar"))
+        {
+            sb.AppendLine("""
+                Action semantics:
+                - The model must correct grammar and spelling mistakes.
+                - The meaning must remain identical.
+                - Tone changes should be minimal.
+                - Structural rewrites should be minimal.
+                - Penalize unnecessary rewording.
+                """);
+        }
+
+        if (actionList.Count == 0 || !actionList.Any(a => a.StartsWith("sms.")))
+        {
+            sb.AppendLine("""
+                Action semantics:
+                - The model must TRANSFORM the existing input text.
+                - The output must preserve the original meaning.
+                - The output must not invent unrelated content.
+                - The output must remain semantically connected to the original text.
+                """);
         }
 
         sb.AppendLine("""

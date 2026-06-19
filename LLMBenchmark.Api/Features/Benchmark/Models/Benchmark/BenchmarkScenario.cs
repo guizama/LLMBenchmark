@@ -6,7 +6,7 @@ public sealed class BenchmarkScenario
 {
     public string? Id { get; set; }
 
-    public string? Action { get; set; }
+    public List<string>? Action { get; set; }
 
     public BenchmarkScenarioInput Input { get; set; } = new();
 

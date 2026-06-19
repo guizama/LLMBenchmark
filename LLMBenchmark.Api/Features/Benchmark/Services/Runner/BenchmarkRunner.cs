@@ -63,7 +63,7 @@ public sealed class BenchmarkRunner(
                             Timestamp = DateTime.UtcNow,
                             ScenarioId = scenario.Id ?? string.Empty,
 
-                            Action = scenario.Action ?? string.Empty,
+                            Action = scenario.Action != null ? string.Join(",", scenario.Action) : string.Empty,
                             Language = scenario.Input.Language ?? string.Empty,
 
                             Success = false,
@@ -80,11 +80,22 @@ public sealed class BenchmarkRunner(
 
                     #endregion
 
-                    _ = SmsActionParser.TryParse(scenario.Action, out SmsAction action);
+                    var actions = new List<SmsAction>();
+                    if (scenario.Action != null)
+                    {
+                        foreach (var actionStr in scenario.Action)
+                        {
+                            if (SmsActionParser.TryParse(actionStr, out SmsAction parsedAction))
+                            {
+                                actions.Add(parsedAction);
+                            }
+                        }
+                    }
+
                     var request = new LLMRequest
                     {
                         UserText = scenario.Input.Prompt ?? scenario.Input.InputText ?? string.Empty,
-                        Action = action,
+                        Action = actions,
                         Tone = MapTone(scenario.Input.Tone),
                         Language = MapLanguage(scenario.Input.Language),
                         Creativity = SmsCreativity.Low
@@ -102,7 +113,7 @@ public sealed class BenchmarkRunner(
                             ScenarioId = scenario.Id ?? string.Empty,
                             Provider = response.Provider ?? string.Empty,
                             Model = response.Model ?? string.Empty,
-                            Action = scenario.Action ?? string.Empty,
+                            Action = scenario.Action != null ? string.Join(",", scenario.Action) : string.Empty,
                             Language = scenario.Input.Language ?? string.Empty,
                             InputPrompt = request.UserText ?? string.Empty,
                             Output = response.Output ?? string.Empty,

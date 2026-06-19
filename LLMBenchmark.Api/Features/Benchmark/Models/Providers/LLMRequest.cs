@@ -6,7 +6,7 @@ public sealed class LLMRequest
 {
     public string UserText { get; set; } = default!;
 
-    public SmsAction Action { get; set; }
+    public List<SmsAction> Action { get; set; } = new();
 
     public SmsTone Tone { get; set; }
 

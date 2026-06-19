@@ -137,17 +137,25 @@ public abstract partial class BaseLLMProvider : ILLMProvider
 
     private static void GetPrompts(LLMRequest request, out string systemPrompt, out string systemPromptRequestSettings, out string systemPromptInputMetadata)
     {
-        var actionInstructions = request.Action switch
+        var actionInstructions = new List<string>();
+
+        foreach (var action in request.Action)
         {
-            SmsAction.Generate => "Generate a completely new SMS based on the user request.",
-            SmsAction.Rewrite => "Rewrite the existing SMS while preserving its original meaning and intent. Do not create a completely different SMS.",
-            SmsAction.Shorten => "Shorten the existing SMS while preserving critical information, meaning, placeholders, URLs, dates, codes, prices and CTAs when present. Do not create a completely different SMS.",
-            SmsAction.Expand => "Expand the existing SMS naturally while preserving the original meaning and intent. Do not create a completely different SMS.",
-            SmsAction.Formalize => "Rewrite the existing SMS using a more formal tone while preserving the original meaning and intent. Do not create a completely different SMS.",
-            SmsAction.Casualize => "Rewrite the existing SMS using a more casual tone while preserving the original meaning and intent. Do not create a completely different SMS.",
-            SmsAction.FixGrammar => "Fix grammar, spelling and punctuation issues while preserving the original meaning and wording as much as possible. Do not create a completely different SMS.",
-            _ => "Process the SMS request safely."
-        };
+            var instruction = action switch
+            {
+                SmsAction.Generate => "Generate a completely new SMS based on the user request.",
+                SmsAction.Rewrite => "Rewrite the existing SMS while preserving its original meaning and intent. Do not create a completely different SMS.",
+                SmsAction.Shorten => "Shorten the existing SMS while preserving critical information, meaning, placeholders, URLs, dates, codes, prices and CTAs when present. Do not create a completely different SMS.",
+                SmsAction.Expand => "Expand the existing SMS naturally while preserving the original meaning and intent. Do not create a completely different SMS.",
+                SmsAction.Formalize => "Rewrite the existing SMS using a more formal tone while preserving the original meaning and intent. Do not create a completely different SMS.",
+                SmsAction.Casualize => "Rewrite the existing SMS using a more casual tone while preserving the original meaning and intent. Do not create a completely different SMS.",
+                SmsAction.FixGrammar => "Fix grammar, spelling and punctuation issues while preserving the original meaning and wording as much as possible. Do not create a completely different SMS.",
+                _ => "Process the SMS request safely."
+            };
+            actionInstructions.Add(instruction);
+        }
+
+        var combinedActionInstructions = string.Join(" ", actionInstructions);
 
         systemPrompt = """
             You are a specialized SMS generation engine.
@@ -220,10 +228,10 @@ public abstract partial class BaseLLMProvider : ILLMProvider
 
         var requestSettings = new List<string>
         {
-            $"Action: {request.Action}",
+            $"Action: {string.Join(", ", request.Action)}",
             $"Tone: {request.Tone}",
             $"Language: {request.Language}",
-            $"ActionBehavior: {actionInstructions}"
+            $"ActionBehavior: {combinedActionInstructions}"
         };
 
         systemPromptRequestSettings =

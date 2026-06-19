@@ -1,7 +1,7 @@
 [
   {
     "id": "gen_ptpt_promo_casual_001",
-    "action": "sms.generate",
+    "action": [ "sms.generate" ],
     "input": {
       "prompt": "Cria um SMS promocional para clientes recorrentes da ModaMix com 30% desconto em toda a loja e inclui uma CTA para visitar o site hoje.",
       "language": "pt-PT",
