@@ -26,8 +26,7 @@ public sealed class SharpTokenEstimator : ITokenEstimator
         });
     }
 
-    private static string GetEncodingName(
-        TokenizerType tokenizer)
+    private static string GetEncodingName(TokenizerType tokenizer)
     {
         return tokenizer switch
         {
